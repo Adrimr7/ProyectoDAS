@@ -71,6 +71,9 @@ public class Avion{
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+    public void setClase(String clase) {
+        this.clase = clase;
+    }
     public void setModelo(String Modelo) {
         this.modelo = modelo;
     }

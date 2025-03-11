@@ -1,26 +1,22 @@
 package com.example.das_primeraevaluacion;
 
-import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.os.Build;
-import android.widget.Toast;
-
-import androidx.core.app.NotificationCompat;
 
 import com.example.das_primeraevaluacion.bd.AvionDAO;
 
@@ -28,39 +24,39 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MainActivity extends AppCompatActivity implements AgregarAvionDialog.OnAvionAgregadoListener{
+public class MainActivity extends AppCompatActivity implements AgregarAvionDialog.OnAvionAgregadoListener {
     private AvionDAO avionDAO;
     private RecyclerView recyclerView;
     private AvionAdapter adapter;
     private List<Avion> listaAviones;
-    private Button btnAgregar;
-    private Button btnResetear;
+    private Button btnAgregar, btnResetear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        avionDAO = new AvionDAO(this);
-        //
-        avionDAO.eliminarBD();
 
+        avionDAO = new AvionDAO(this);
         listaAviones = avionDAO.obtenerTodosLosAviones();
-        System.out.println(listaAviones);
-        if (listaAviones.isEmpty())
-        {
-            System.out.println("no hay info en BD");
+
+        if (listaAviones.isEmpty()) {
             listaAviones = cargarAvionesDesdeJSON();
         }
 
+        setupRecyclerView();
+        setupBotones();
+    }
 
+    private void setupRecyclerView() {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new AvionAdapter(listaAviones, avion -> {
             Intent intent = new Intent(MainActivity.this, DetallesAvionActivity.class);
+            intent.putExtra("id", avion.getId());
             intent.putExtra("nombre", avion.getNombre());
             intent.putExtra("clase", avion.getClase());
             intent.putExtra("tarifa", avion.getTarifaBase());
@@ -69,65 +65,47 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             startActivity(intent);
         });
         recyclerView.setAdapter(adapter);
-        // listaAviones = avionDAO.obtenerTodosLosAviones();
-        // arreglar adapter, no usar notifyDataSetChanged
-        adapter.notifyDataSetChanged();
+    }
 
+    private void setupBotones() {
         btnAgregar = findViewById(R.id.btnAgregar);
         btnAgregar.setOnClickListener(v -> mostrarDialogoAgregarAvion());
+
         btnResetear = findViewById(R.id.btnReiniciarBD);
         btnResetear.setOnClickListener(v -> resetearBD());
     }
+
     private void resetearBD() {
-        // codigo para resetear BD.
-        System.out.println("ResetearBD");
         avionDAO.eliminarBD();
-        listaAviones = cargarAvionesDesdeJSON();
-        // tener en cuenta al resetear!
+        listaAviones.clear();
+        listaAviones.addAll(cargarAvionesDesdeJSON());
         adapter.notifyDataSetChanged();
-        System.out.println("BD Reseteada");
+        Toast.makeText(this, "Base de datos reseteada", Toast.LENGTH_SHORT).show();
     }
+
     private List<Avion> cargarAvionesDesdeJSON() {
         List<Avion> aviones = new ArrayList<>();
         try {
-            System.out.println("Entrado a cargarAvionesDesdeJSON");
             InputStream is = getAssets().open("datos.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
+            byte[] buffer = new byte[is.available()];
             is.read(buffer);
             is.close();
-            String jsonStr = new String(buffer, "UTF-8");
 
-            JSONObject jsonObject = new JSONObject(jsonStr);
-            JSONArray jsonArray = jsonObject.getJSONArray("jets");
+            JSONArray jsonArray = new JSONObject(new String(buffer, StandardCharsets.UTF_8)).getJSONArray("jets");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject obj = jsonArray.getJSONObject(i);
+                Avion avion = new Avion(0, obj.getString("nombre"), obj.getString("fabricante"), obj.getString("modelo"),
+                        obj.getInt("alcance_km"), obj.getInt("num_pasajeros"), obj.getInt("personal_cabina"),
+                        obj.getInt("tarifa_base"), obj.getString("clase"), obj.getInt("tamano_m"), null);
 
-                // Crear el objeto Avion
-                Avion avion = new Avion(
-                        0, // ID se asignará al insertar en la base de datos
-                        obj.getString("nombre"),
-                        obj.getString("fabricante"),
-                        obj.getString("modelo"),
-                        obj.getInt("alcance_km"),
-                        obj.getInt("num_pasajeros"),
-                        obj.getInt("personal_cabina"),
-                        obj.getInt("tarifa_base"),
-                        obj.getString("clase"),
-                        obj.getInt("tamano_m"),
-                        null // Lista de facilidades vacía por ahora
-                );
-                long idGenerado = avionDAO.insertarAvion(avion);
-                avion.setId((int) idGenerado);
+                avion.setId((int) avionDAO.insertarAvion(avion));
                 aviones.add(avion);
             }
-            System.gc();
         } catch (Exception e) {
-            Log.e("JSON_ERROR", e.getMessage());
+            Log.e("JSON_ERROR", "Error al cargar JSON", e);
         }
         return aviones;
     }
-
 
     private void mostrarDialogoAgregarAvion() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -142,51 +120,30 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
 
         AlertDialog dialog = builder.create();
 
-        btnCancelar.setOnClickListener(v -> {
-            System.out.println("Cancelando");
-            dialog.dismiss();
-        });
+        btnCancelar.setOnClickListener(v -> dialog.dismiss());
 
         btnGuardar.setOnClickListener(v -> {
             String nombre = etNombre.getText().toString().trim();
             String clase = etClase.getText().toString().trim();
             String tarifaStr = etTarifa.getText().toString().trim();
 
-            // Validar que los campos no estén vacíos
-            if (nombre.isEmpty()) {
-                etNombre.setError("Este campo es obligatorio");
+            if (nombre.isEmpty() || clase.isEmpty() || tarifaStr.isEmpty()) {
+                Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (clase.isEmpty()) {
-                etClase.setError("Este campo es obligatorio");
-                return;
-            }
-            if (tarifaStr.isEmpty()) {
-                etTarifa.setError("Este campo es obligatorio");
-                return;
-            }
-
-            int tarifa;
             try {
-                tarifa = Integer.parseInt(tarifaStr);
-                if (tarifa < 0) { // Asegurar que la tarifa no sea negativa
-                    etTarifa.setError("La tarifa debe ser un número positivo");
-                    return;
-                }
+                int tarifa = Integer.parseInt(tarifaStr);
+                if (tarifa < 0) throw new NumberFormatException();
+
+                onAvionAgregado(nombre, clase, tarifa);
+                dialog.dismiss();
             } catch (NumberFormatException e) {
-                etTarifa.setError("Ingrese un número válido");
-                return;
+                Toast.makeText(this, "Introduce un número válido para la tarifa", Toast.LENGTH_SHORT).show();
             }
-
-            // Crear el nuevo avión solo si los datos son válidos
-            Avion nuevoAvion = new Avion(0, nombre, "", "", 0, 0, 0, tarifa, clase, 0, null);
-            listaAviones.add(nuevoAvion);
-            adapter.notifyDataSetChanged();
-            dialog.dismiss();
         });
-
         dialog.show();
     }
+
     private void mostrarNotificacion(String nombreAvion) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "aviones_channel";
@@ -203,17 +160,43 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         notificationManager.notify(1, builder.build());
     }
 
-
     @Override
     public void onAvionAgregado(String nombre, String clase, int tarifa) {
-        List<String> laLista = new ArrayList<>();
-
-        Avion nuevoAvion = new Avion(0, nombre, "", "", 0, 0, 0, tarifa, clase, 0, laLista);
-        long idGenerado = avionDAO.insertarAvion(nuevoAvion);
-        nuevoAvion.setId((int) idGenerado);
+        Avion nuevoAvion = new Avion(0, nombre, "", "", 0, 0, 0, tarifa, clase, 0, null);
+        nuevoAvion.setId((int) avionDAO.insertarAvion(nuevoAvion));
         listaAviones.add(nuevoAvion);
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemInserted(listaAviones.size() - 1);
+        mostrarNotificacion(nombre);
+    }
 
-        Toast.makeText(this, "Avión agregado con ID " + idGenerado, Toast.LENGTH_SHORT).show();
+    // Este método se llama cuando volvemos de la actividad de detalles (editar)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("Entrado a onActivityResult");
+        if (resultCode == 0 && data != null) {
+
+            int id = data.getIntExtra("id", -1);
+            String nombre = data.getStringExtra("nombre");
+            String clase = data.getStringExtra("clase");
+            int tarifa = data.getIntExtra("tarifa", 0);
+            int pasajeros = data.getIntExtra("num_pasajeros", 0);
+            int alcance = data.getIntExtra("alcance_km", 0);
+
+            // Encontramos el avión con ese ID y lo actualizamos
+            for (int i = 0; i < listaAviones.size(); i++) {
+                Avion avion = listaAviones.get(i);
+                if (avion.getId() == id) {
+                    System.out.println("El id que coincide es: " + id);
+                    avion.setNombre(nombre);
+                    avion.setClase(clase);
+                    avion.setTarifaBase(tarifa);
+                    avion.setNumPasajeros(pasajeros);
+                    avion.setAlcanceKm(alcance);
+                    adapter.notifyItemChanged(i, avion);
+                    break;
+                }
+            }
+        }
     }
 }

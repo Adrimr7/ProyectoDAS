@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AvionDAO {
-    private SQLiteDatabase db;
+    private final SQLiteDatabase db;
 
     public AvionDAO(Context context) {
         AvionDBHelper dbHelper = new AvionDBHelper(context);
@@ -33,7 +33,7 @@ public class AvionDAO {
         values.put("tamano_m", avion.getTamanoM());
 
         // Insertar el avión y devolver el ID generado
-        System.out.println(avion.getNombre() + avion.getFabricante());
+        // System.out.println(avion.getNombre() + avion.getFabricante());
         return db.insert("aviones", null, values);
     }
 
@@ -65,8 +65,8 @@ public class AvionDAO {
         String query = "SELECT * FROM " + AvionDBHelper.TABLE_AVIONES;
         Cursor cursor = db.rawQuery(query, null);
 
-        while (cursor.moveToNext()){
-            if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
+            do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_ID));
                 String nombre = cursor.getString(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_NOMBRE));
                 String fabricante = cursor.getString(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_FABRICANTE));
@@ -77,14 +77,23 @@ public class AvionDAO {
                 int tarifaBase = cursor.getInt(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_TARIFA_BASE));
                 String clase = cursor.getString(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_CLASE));
                 int tamano = cursor.getInt(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_TAMANO));
-                //List<String> facilidades = Arrays.asList(gson.fromJson(cursor.getString(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_FACILIDADES)), String[].class));
-                List<String> facilidades = new ArrayList<String>();
-                System.out.println(id + nombre + fabricante);
-                listaAviones.add(new Avion(id, nombre, fabricante, modelo, alcance, numPasajeros, personalCabina, tarifaBase, clase, tamano, facilidades));
+
+                listaAviones.add(new Avion(id, nombre, fabricante, modelo, alcance, numPasajeros, personalCabina, tarifaBase, clase, tamano, new ArrayList<>()));
             }
+            while (cursor.moveToNext());
         }
 
         cursor.close();
         return listaAviones;
+    }
+    public int actualizarAvion(Avion avion) {
+        ContentValues values = new ContentValues();
+        values.put("nombre", avion.getNombre());
+        values.put("clase", avion.getClase());
+        values.put("tarifa_base", avion.getTarifaBase());
+        values.put("num_pasajeros", avion.getNumPasajeros());
+        values.put("alcance_km", avion.getAlcanceKm());
+
+        return db.update("aviones", values, "id = ?", new String[]{String.valueOf(avion.getId())});
     }
 }
