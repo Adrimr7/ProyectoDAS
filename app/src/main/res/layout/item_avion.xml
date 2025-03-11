@@ -20,10 +20,10 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvFabricante"
+            android:id="@+id/tvClase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fabricante"
+            android:text="Clase"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray" />
 

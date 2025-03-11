@@ -12,10 +12,10 @@
         android:hint="Nombre del avión" />
 
     <EditText
-        android:id="@+id/etFabricante"
+        android:id="@+id/etClase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Fabricante" />
+        android:hint="Clase" />
 
     <EditText
         android:id="@+id/etTarifa"
@@ -33,5 +33,5 @@
         android:id="@+id/btnAgregar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Agregar" />
+        android:text="Cancelar" />
 </LinearLayout>

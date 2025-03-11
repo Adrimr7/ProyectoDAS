@@ -35,7 +35,7 @@ public class AvionAdapter extends RecyclerView.Adapter<AvionAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Avion avion = aviones.get(position);
         holder.nombre.setText(avion.getNombre());
-        holder.fabricante.setText(avion.getFabricante());
+        holder.clase.setText(avion.getClase());
         holder.tarifa.setText("$" + avion.getTarifaBase());
 
         holder.itemView.setOnClickListener(v -> listener.onItemClick(avion));
@@ -43,16 +43,16 @@ public class AvionAdapter extends RecyclerView.Adapter<AvionAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return aviones.size();
+        return aviones != null ? aviones.size() : 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView nombre, fabricante, tarifa;
+        TextView nombre, clase, tarifa;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             nombre = itemView.findViewById(R.id.tvNombre);
-            fabricante = itemView.findViewById(R.id.tvFabricante);
+            clase = itemView.findViewById(R.id.tvClase);
             tarifa = itemView.findViewById(R.id.tvTarifa);
         }
     }

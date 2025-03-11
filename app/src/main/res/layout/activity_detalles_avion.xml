@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
@@ -25,10 +27,10 @@
                 android:text="Nombre del Avión" />
 
             <TextView
-                android:id="@+id/tvFabricante"
+                android:id="@+id/tvClase"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fabricante" />
+                android:text="Clase" />
 
             <TextView
                 android:id="@+id/tvTarifa"
@@ -47,7 +49,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Alcance" />
+
         </LinearLayout>
+
     </androidx.cardview.widget.CardView>
+
+
+    <ImageView
+        android:id="@+id/ivAvion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnVolver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:text="Volver" />
 
 </LinearLayout>

@@ -2,7 +2,8 @@ package com.example.das_primeraevaluacion;
 
 import java.util.List;
 
-public class Avion {
+public class Avion{
+    private int id;
     private String nombre;
     private String fabricante;
     private String modelo;
@@ -15,8 +16,9 @@ public class Avion {
     private List<String> facilidades;
 
     // Constructor
-    public Avion(String nombre, String fabricante, String modelo, int alcanceKm, int numPasajeros,
+    public Avion(int id, String nombre, String fabricante, String modelo, int alcanceKm, int numPasajeros,
                  int personalCabina, int tarifaBase, String clase, int tamanoM, List<String> facilidades) {
+        this.id = id;
         this.nombre = nombre;
         this.fabricante = fabricante;
         this.modelo = modelo;
@@ -30,7 +32,9 @@ public class Avion {
     }
 
     // Getters
-
+    public int getId() {
+        return id;
+    }
     public String getNombre() {
         return nombre;
     }
@@ -84,5 +88,8 @@ public class Avion {
     }
     public void setTarifaBase(int tarifaBase) {
         this.tarifaBase = tarifaBase;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 }
