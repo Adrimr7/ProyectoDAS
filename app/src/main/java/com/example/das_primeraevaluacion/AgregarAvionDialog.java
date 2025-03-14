@@ -35,6 +35,7 @@ public class AgregarAvionDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_agregar_avion, null);
@@ -48,6 +49,14 @@ public class AgregarAvionDialog extends DialogFragment {
 
         Button btnCancelar = view.findViewById(R.id.btnAgregar);
         Button btnGuardar = view.findViewById(R.id.btnGuardar);
+
+        if (savedInstanceState != null) {
+            etNombre.setText(savedInstanceState.getString("nombre", ""));
+            etClase.setText(savedInstanceState.getString("clase", ""));
+            etTarifa.setText(savedInstanceState.getString("tarifa", ""));
+            etPasajeros.setText(savedInstanceState.getString("numPasajeros", ""));
+            etAlcance.setText(savedInstanceState.getString("alcance", ""));
+        }
 
         btnCancelar.setOnClickListener(v -> {
             System.out.println("Cancelando");
@@ -126,4 +135,27 @@ public class AgregarAvionDialog extends DialogFragment {
 
         return builder.create();
     }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        EditText etNombre = getView().findViewById(R.id.etNombre);
+        EditText etClase = getView().findViewById(R.id.etClase);
+        EditText etTarifa = getView().findViewById(R.id.etTarifa);
+        EditText etPasajeros = getView().findViewById(R.id.etPasajeros);
+        EditText etAlcance = getView().findViewById(R.id.etAlcance);
+
+        outState.putString("nombre", etNombre.getText().toString());
+        outState.putString("clase", etClase.getText().toString());
+        outState.putString("tarifa", etTarifa.getText().toString());
+        outState.putString("numPasajeros", etPasajeros.getText().toString());
+        outState.putString("alcance", etAlcance.getText().toString());
+    }
+
 }

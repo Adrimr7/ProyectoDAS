@@ -1,7 +1,5 @@
 package com.example.das_primeraevaluacion;
 
-
-import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -14,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ActionMenuView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,8 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.ActionMenuItem;
-import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -47,6 +42,12 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
     private long tiempoPresionadoAtras = 0;
 
 
+    /**
+     * @param savedInstanceState Estado guardado de la actividad, si existe.
+     * Inicializa la actividad, configura el drawer, la toolbar y establece el idioma.
+     * Configura la navegación entre fragmentos y gestiona la selección de items en el menú.
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("MainActivity: onCreate");
@@ -54,9 +55,9 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         setContentView(R.layout.activity_main);
         permisosNotificaciones();
 
+        // Configuración de la toolbar, la navigacion y el drawer
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
 
@@ -65,10 +66,13 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Ajustes de idioma
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
-        String language = prefs.getString("My_Lang", "es"); // Español por defecto
+        String language = prefs.getString("My_Lang", "es");
         setIdioma(language);
         actualizarIdiomaMenu();
+
+        // Manejo de menu
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_add || id == R.id.action_add) {
@@ -99,12 +103,17 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             drawerLayout.closeDrawers();
             return true;
         });
+
+        // Carga inicial del fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AvionesFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
         }
     }
-
+    /**
+     * Boton de back. Si no está en Home --> Home.
+     * Si está en Home, esperar 3 segundos, si en esos 3 segundos se vuelve a pulsar, salir de la app.
+     */
     @Override
     public void onBackPressed() {
         Fragment fragmentActual = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
@@ -124,7 +133,11 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             tiempoPresionadoAtras = System.currentTimeMillis();
         }
     }
-
+    /**
+     * @param codigoIdioma String
+     * Establece el idioma de la app.
+     * Si es necesario, actualiza textos y botones.
+     */
     public void setIdioma(String codigoIdioma) {
         System.out.println("MainActivity: setIdioma");
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
@@ -156,7 +169,11 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             invalidateOptionsMenu();
         }
     }
-
+    /**
+     * @param menu Menú de opciones.
+     * Ajusta el título para mostrar el idioma.
+     * @return true si se crea bien el menú.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         System.out.println("MainActivity: onCreateOptionsMenu");
@@ -167,7 +184,11 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         cambiarIdioma.setTitle(idiomaActual);
         return true;
     }
-
+    /**
+     * @param item Elemento seleccionado en el menú.
+     * Realiza las acciones (agregar avión, cambiar idioma o resetear BD).
+     * @return true si no hay errores.
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         System.out.println("MainActivity: onOptionsItemSelected");
@@ -193,7 +214,9 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         }
         return true;
     }
-
+    /**
+     * Actualiza los textos concretos del menu al cambiar de idioma.
+     */
     private void actualizarIdiomaMenu() {
         NavigationView navigationView = findViewById(R.id.navigation_view);
         Menu menu = navigationView.getMenu();
@@ -207,7 +230,12 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         MenuItem agregarItem = menu.findItem(R.id.nav_add);
         agregarItem.setTitle(R.string.menu_add);
     }
-
+    /**
+     * @param item Elemento seleccionado en la navegacion.
+     *
+     * Realiza las acciones de la navegacion (moverse de pestaña o Reiniciar BD).
+     * @return true si no hay errores.
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         System.out.println("MainActivity: onNavigationItemSelected");
@@ -227,7 +255,10 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    /**
+     * Obtiene el idioma a ser cambiado
+     * @return "es" si el idioma actual es Ingles. "en" en caso contrario.
+     */
     private String getIdiomaACambiar() {
         System.out.println("MainActivity: getIdiomaACambiar");
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
@@ -237,7 +268,10 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         }
         return "en";
     }
-
+    /**
+     * Reinicia la base de datos, y dependiendo de en que fragment esté, se puede hacer o no.
+     * Esto es algo a solucionar para la siguiente entrega, porque se tienen que reiniciar las reservas.
+     */
     public void reiniciarBD() {
         System.out.println("MainActivity: reiniciarBD");
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -258,6 +292,12 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         }
 
     }
+
+    /**
+     * Muestra un Dialog para agregar un nuevo avión.
+     * Verifica los campos, y si los datos son válidos, agrega al fragment.
+     * En caso de error, mensaje de aviso.
+     */
 
     private void mostrarDialogoAgregarAvion() {
         System.out.println("MainActivity: mostrarDialogoAgregarAvion");
@@ -318,6 +358,10 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         });
         dialog.show();
     }
+    /**
+     * Verifica si la app tiene permisos para notificaciones. Si no, lo solicita.
+     * Crea un canal de notificación.
+     */
     private void permisosNotificaciones() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
@@ -327,7 +371,15 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         }
         crearCanalNotificacion();
     }
-
+    /**
+     * @param nombre String.
+     * @param clase String
+     * @param tarifa int
+     * @param numPasajeros int
+     * @param alcance int
+     * Se ejecuta al agragar un avion
+     * Pasa los detalles al fragment correspondiente para actualizar la vista.
+     */
     @Override
     public void onAvionAgregado(String nombre, String clase, int tarifa, int numPasajeros, int alcance) {
         System.out.println("MainActivity: onAvionAgregado");
