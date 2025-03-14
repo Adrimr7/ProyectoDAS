@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.DAS_PrimeraEvaluacion" parent="Base.Theme.DAS_PrimeraEvaluacion" />
+
+    <style name="CustomPopupMenuText" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:textColor">#FFFFFF</item> <!-- Blanco -->
+        <item name="android:textStyle">bold</item> <!-- Negrita -->
+        <item name="android:textAppearance">@style/TextAppearance.Material3.ActionBar.Title</item>
+    </style>
 </resources>

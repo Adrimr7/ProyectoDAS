@@ -1,113 +1,266 @@
 package com.example.das_primeraevaluacion;
 
+
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ActionMenuView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.view.menu.ActionMenuItem;
+import androidx.appcompat.view.menu.ActionMenuItemView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.example.das_primeraevaluacion.bd.AvionDAO;
+import com.google.android.material.navigation.NavigationView;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.Locale;
+import java.util.concurrent.Executors;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+public class MainActivity extends AppCompatActivity implements AgregarAvionDialog.OnAvionAgregadoListener, NavigationView.OnNavigationItemSelectedListener{
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ActionBarDrawerToggle toggle;
+    private long tiempoPresionadoAtras = 0;
 
-public class MainActivity extends AppCompatActivity implements AgregarAvionDialog.OnAvionAgregadoListener {
-    private AvionDAO avionDAO;
-    private RecyclerView recyclerView;
-    private AvionAdapter adapter;
-    private List<Avion> listaAviones;
-    private Button btnAgregar, btnResetear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("MainActivity: onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        permisosNotificaciones();
 
-        avionDAO = new AvionDAO(this);
-        listaAviones = avionDAO.obtenerTodosLosAviones();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        if (listaAviones.isEmpty()) {
-            listaAviones = cargarAvionesDesdeJSON();
-        }
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
 
-        setupRecyclerView();
-        setupBotones();
-    }
+        toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
-    private void setupRecyclerView() {
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AvionAdapter(listaAviones, avion -> {
-            Intent intent = new Intent(MainActivity.this, DetallesAvionActivity.class);
-            intent.putExtra("id", avion.getId());
-            intent.putExtra("nombre", avion.getNombre());
-            intent.putExtra("clase", avion.getClase());
-            intent.putExtra("tarifa", avion.getTarifaBase());
-            intent.putExtra("num_pasajeros", avion.getNumPasajeros());
-            intent.putExtra("alcance_km", avion.getAlcanceKm());
-            startActivity(intent);
-        });
-        recyclerView.setAdapter(adapter);
-    }
-
-    private void setupBotones() {
-        btnAgregar = findViewById(R.id.btnAgregar);
-        btnAgregar.setOnClickListener(v -> mostrarDialogoAgregarAvion());
-
-        btnResetear = findViewById(R.id.btnReiniciarBD);
-        btnResetear.setOnClickListener(v -> resetearBD());
-    }
-
-    private void resetearBD() {
-        avionDAO.eliminarBD();
-        listaAviones.clear();
-        listaAviones.addAll(cargarAvionesDesdeJSON());
-        adapter.notifyDataSetChanged();
-        Toast.makeText(this, "Base de datos reseteada", Toast.LENGTH_SHORT).show();
-    }
-
-    private List<Avion> cargarAvionesDesdeJSON() {
-        List<Avion> aviones = new ArrayList<>();
-        try {
-            InputStream is = getAssets().open("datos.json");
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
-
-            JSONArray jsonArray = new JSONObject(new String(buffer, StandardCharsets.UTF_8)).getJSONArray("jets");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                Avion avion = new Avion(0, obj.getString("nombre"), obj.getString("fabricante"), obj.getString("modelo"),
-                        obj.getInt("alcance_km"), obj.getInt("num_pasajeros"), obj.getInt("personal_cabina"),
-                        obj.getInt("tarifa_base"), obj.getString("clase"), obj.getInt("tamano_m"), null);
-
-                avion.setId((int) avionDAO.insertarAvion(avion));
-                aviones.add(avion);
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String language = prefs.getString("My_Lang", "es"); // Español por defecto
+        setIdioma(language);
+        actualizarIdiomaMenu();
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_add || id == R.id.action_add) {
+                mostrarDialogoAgregarAvion();
+                if (navigationView.getCheckedItem().getItemId() != R.id.nav_reservas) {
+                    navigationView.setCheckedItem(R.id.nav_home);
+                }
             }
-        } catch (Exception e) {
-            Log.e("JSON_ERROR", "Error al cargar JSON", e);
+            else if (id == R.id.nav_reset) {
+                reiniciarBD();
+                cambiarFragement(new AvionesFragment());
+            }
+            else if (id == R.id.btnCambiarIdioma) {
+                setIdioma(getIdiomaACambiar());
+            }
+            else if (id == R.id.nav_home) {
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (!(fragment instanceof AvionesFragment)) {
+                    replaceFragment(new AvionesFragment());
+                }
+            }
+            else if (id == R.id.nav_reservas) {
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (!(fragment instanceof ReservasFragment)) {
+                    replaceFragment(new ReservasFragment());
+                }
+            }
+            drawerLayout.closeDrawers();
+            return true;
+        });
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AvionesFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_home);
         }
-        return aviones;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragmentActual = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        if (!(fragmentActual instanceof AvionesFragment)) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new AvionesFragment())
+                    .commit();
+        }
+        else {
+            if (tiempoPresionadoAtras + 3000 > System.currentTimeMillis()) {
+                super.onBackPressed();
+            }
+            else {
+                Toast.makeText(this, R.string.atras_2, Toast.LENGTH_SHORT).show();
+            }
+            tiempoPresionadoAtras = System.currentTimeMillis();
+        }
+    }
+
+    public void setIdioma(String codigoIdioma) {
+        System.out.println("MainActivity: setIdioma");
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String idiomaActual = prefs.getString("My_Lang", "es");
+
+        if (!idiomaActual.equals(codigoIdioma)) {
+            Locale locale = new Locale(codigoIdioma);
+            Locale.setDefault(locale);
+            Configuration config = new Configuration();
+            config.setLocale(locale);
+            getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("My_Lang", codigoIdioma);
+            editor.apply();
+            if (findViewById(R.id.tvTitulo)== null) {
+                TextView viewById3 = findViewById(R.id.tvTituloReservas);
+                viewById3.setText(R.string.mis_reservas);
+                TextView viewById4 = findViewById(R.id.tvSiguiente);
+                viewById4.setText(R.string.texto_siguiente);
+            }
+            else {
+                TextView viewById = findViewById(R.id.tvTitulo);
+                viewById.setText(R.string.app_name);
+            }
+            Toolbar viewById2 = findViewById(R.id.toolbar);
+            viewById2.setTitle(R.string.app_name);
+
+            invalidateOptionsMenu();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        System.out.println("MainActivity: onCreateOptionsMenu");
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem cambiarIdioma = menu.findItem(R.id.btnCambiarIdioma);
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String idiomaActual = prefs.getString("My_Lang", "es");
+        cambiarIdioma.setTitle(idiomaActual);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        System.out.println("MainActivity: onOptionsItemSelected");
+        if (item.getItemId() == R.id.action_add) {
+            mostrarDialogoAgregarAvion();
+            return true;
+        }
+        else if (item.getItemId() == R.id.btnCambiarIdioma) {
+            setIdioma(getIdiomaACambiar());
+            invalidateOptionsMenu();
+            actualizarIdiomaMenu();
+            pasarGarbageCollector();
+            return true;
+        }
+        else if (item.getItemId() == R.id.nav_reset) {
+            reiniciarBD();
+            navigationView.setCheckedItem(R.id.nav_reservas);
+            replaceFragment(new ReservasFragment());
+            pasarGarbageCollector();
+        }
+        else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
+
+    private void actualizarIdiomaMenu() {
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        Menu menu = navigationView.getMenu();
+
+        MenuItem homeItem = menu.findItem(R.id.nav_home);
+        homeItem.setTitle(R.string.menu_home);
+
+        MenuItem reservasItem = menu.findItem(R.id.nav_reservas);
+        reservasItem.setTitle(R.string.menu_reservas);
+
+        MenuItem agregarItem = menu.findItem(R.id.nav_add);
+        agregarItem.setTitle(R.string.menu_add);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        System.out.println("MainActivity: onNavigationItemSelected");
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            replaceFragment(new AvionesFragment());
+        }
+        else if (id == R.id.nav_reservas) {
+            replaceFragment(new ReservasFragment());
+        }
+        else if (id == R.id.nav_reset){
+            reiniciarBD();
+            cambiarFragement(new AvionesFragment());
+        }
+        pasarGarbageCollector();
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private String getIdiomaACambiar() {
+        System.out.println("MainActivity: getIdiomaACambiar");
+        SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
+        String idiomaActual = prefs.getString("My_Lang", "es");
+        if (idiomaActual.equals("en")){
+            return "es";
+        }
+        return "en";
+    }
+
+    public void reiniciarBD() {
+        System.out.println("MainActivity: reiniciarBD");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if (fragmentManager.findFragmentById(R.id.fragment_container).getClass().equals(ReservasFragment.class)) {
+            Toast.makeText(this, getString(R.string.dialog_no_implementado), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+            if (fragment != null) {
+                Executors.newSingleThreadExecutor().execute(fragment::resetearBD);
+                pasarGarbageCollector();
+                Toast.makeText(this, getString(R.string.dialog_reset_db), Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Log.e("MainActivity", "Fragment no encontrado");
+            }
+        }
+
     }
 
     private void mostrarDialogoAgregarAvion() {
+        System.out.println("MainActivity: mostrarDialogoAgregarAvion");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_agregar_avion, null);
         builder.setView(view);
@@ -115,88 +268,137 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         EditText etNombre = view.findViewById(R.id.etNombre);
         EditText etClase = view.findViewById(R.id.etClase);
         EditText etTarifa = view.findViewById(R.id.etTarifa);
+        EditText etPasajeros = view.findViewById(R.id.etPasajeros);
+        EditText etAlcance = view.findViewById(R.id.etAlcance);
+
         Button btnGuardar = view.findViewById(R.id.btnGuardar);
         Button btnCancelar = view.findViewById(R.id.btnAgregar);
 
         AlertDialog dialog = builder.create();
 
-        btnCancelar.setOnClickListener(v -> dialog.dismiss());
+        btnCancelar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
 
         btnGuardar.setOnClickListener(v -> {
             String nombre = etNombre.getText().toString().trim();
             String clase = etClase.getText().toString().trim();
             String tarifaStr = etTarifa.getText().toString().trim();
 
-            if (nombre.isEmpty() || clase.isEmpty() || tarifaStr.isEmpty()) {
-                Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
+            String numPasajeros = etPasajeros.getText().toString().trim();
+            String alcance = etAlcance.getText().toString().trim();
+
+            if (nombre.isEmpty() || clase.isEmpty() || tarifaStr.isEmpty() || numPasajeros.isEmpty() || alcance.isEmpty()) {
+                Toast.makeText(this, getString(R.string.error_campos), Toast.LENGTH_SHORT).show();
                 return;
             }
             try {
                 int tarifa = Integer.parseInt(tarifaStr);
-                if (tarifa < 0) throw new NumberFormatException();
+                int pasajerosReal = Integer.parseInt(numPasajeros);
+                int alcanceReal = Integer.parseInt(alcance);
 
-                onAvionAgregado(nombre, clase, tarifa);
+                if (tarifa < 0) throw new NumberFormatException();
+                if (pasajerosReal < 0) throw new NumberFormatException();
+                if (alcanceReal < 0) throw new NumberFormatException();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (fragmentManager.findFragmentById(R.id.fragment_container).getClass().equals(ReservasFragment.class)) {
+                    navigationView.setCheckedItem(R.id.nav_reservas);
+                    Toast.makeText(this, getString(R.string.dialog_no_implementado), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    navigationView.setCheckedItem(R.id.nav_home);
+                    AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+                    fragment.agregarAvion(nombre, clase, tarifa, pasajerosReal, alcanceReal);
+                }
                 dialog.dismiss();
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Introduce un número válido para la tarifa", Toast.LENGTH_SHORT).show();
+            }
+            catch (NumberFormatException e) {
+                Toast.makeText(this, getString(R.string.error_numero_valido), Toast.LENGTH_SHORT).show();
             }
         });
         dialog.show();
     }
-
-    private void mostrarNotificacion(String nombreAvion) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "aviones_channel";
-
-        NotificationChannel channel = new NotificationChannel(channelId, "Aviones", NotificationManager.IMPORTANCE_DEFAULT);
-        notificationManager.createNotificationChannel(channel);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Nuevo Avión Agregado")
-                .setContentText("Se ha agregado: " + nombreAvion)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        notificationManager.notify(1, builder.build());
+    private void permisosNotificaciones() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
+        crearCanalNotificacion();
     }
 
     @Override
-    public void onAvionAgregado(String nombre, String clase, int tarifa) {
-        Avion nuevoAvion = new Avion(0, nombre, "", "", 0, 0, 0, tarifa, clase, 0, null);
-        nuevoAvion.setId((int) avionDAO.insertarAvion(nuevoAvion));
-        listaAviones.add(nuevoAvion);
-        adapter.notifyItemInserted(listaAviones.size() - 1);
-        mostrarNotificacion(nombre);
+    public void onAvionAgregado(String nombre, String clase, int tarifa, int numPasajeros, int alcance) {
+        System.out.println("MainActivity: onAvionAgregado");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+
+        if (fragment != null) {
+            fragment.onAvionAgregado(nombre, clase, tarifa, numPasajeros, alcance);
+        }
+        else {
+            System.out.println("Error: Fragment no encontrado");
+        }
     }
 
     // Este método se llama cuando volvemos de la actividad de detalles (editar)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("MainActivity: onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("Entrado a onActivityResult");
-        if (resultCode == 0 && data != null) {
-
-            int id = data.getIntExtra("id", -1);
-            String nombre = data.getStringExtra("nombre");
-            String clase = data.getStringExtra("clase");
-            int tarifa = data.getIntExtra("tarifa", 0);
-            int pasajeros = data.getIntExtra("num_pasajeros", 0);
-            int alcance = data.getIntExtra("alcance_km", 0);
-
-            // Encontramos el avión con ese ID y lo actualizamos
-            for (int i = 0; i < listaAviones.size(); i++) {
-                Avion avion = listaAviones.get(i);
-                if (avion.getId() == id) {
-                    System.out.println("El id que coincide es: " + id);
-                    avion.setNombre(nombre);
-                    avion.setClase(clase);
-                    avion.setTarifaBase(tarifa);
-                    avion.setNumPasajeros(pasajeros);
-                    avion.setAlcanceKm(alcance);
-                    adapter.notifyItemChanged(i, avion);
-                    break;
-                }
-            }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+        if (fragment != null) {
+            fragment.agregarAvion(requestCode, resultCode, data);
+        }
+        else {
+            System.out.println("Error: Fragment no encontrado");
         }
     }
+
+    @Override
+    protected void onResume() {
+        System.out.println("MainActivity: onResume");
+        super.onResume();
+        pasarGarbageCollector();
+        cambiarFragement(new AvionesFragment());
+    }
+
+    private void crearCanalNotificacion() {
+        String channelId = "aviones_channel";
+        CharSequence name = "Aviones";
+        String description = getString(R.string.notif_aviones);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+        NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+        channel.setDescription(description);
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        if (notificationManager != null) {
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+    private void replaceFragment(Fragment fragment) {
+        System.out.println("MainActivity: replaceFragment");
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        if (fragment != null && !fragment.getClass().getName().equals(getSupportFragmentManager().findFragmentById(R.id.fragment_container).getClass().getName())) {
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+        }
+    }
+    private void cambiarFragement(Fragment fragment){
+        System.out.println("MainActivity: cambiarFragement");
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commitAllowingStateLoss();
+    }
+    public void pasarGarbageCollector(){
+        Runtime garbage = Runtime.getRuntime();
+        garbage.gc();
+    }
+
 }

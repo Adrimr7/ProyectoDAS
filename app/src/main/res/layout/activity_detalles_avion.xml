@@ -24,31 +24,31 @@
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:text="Nombre del Avión" />
+                android:text="@string/nombre_avion" />
 
             <TextView
                 android:id="@+id/tvClase"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clase" />
+                android:text="@string/clase" />
 
             <TextView
                 android:id="@+id/tvTarifa"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tarifa base" />
+                android:text="@string/tarifa_base" />
 
             <TextView
                 android:id="@+id/tvPasajeros"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Capacidad de pasajeros" />
+                android:text="@string/capac_pasajeros" />
 
             <TextView
                 android:id="@+id/tvAlcance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Alcance" />
+                android:text="@string/alcance" />
 
         </LinearLayout>
 
@@ -62,9 +62,20 @@
 
     <Button
         android:id="@+id/btnEditar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Editar avión" />
+        android:text="@string/edit_avion"
+        android:padding="15dp"
+        android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/btnBorrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/borrar_avion"
+        android:padding="15dp"
+        android:layout_gravity="center"/>
+
 
     <Button
         android:id="@+id/btnVolver"
@@ -72,6 +83,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="8dp"
-        android:text="Volver" />
+        android:text="@string/btn_volver" />
 
 </LinearLayout>

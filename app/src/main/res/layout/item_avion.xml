@@ -15,7 +15,7 @@
             android:id="@+id/tvNombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre del avión"
+            android:text="@string/nombre_avion"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -23,7 +23,7 @@
             android:id="@+id/tvClase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clase"
+            android:text="@string/clase"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray" />
 
@@ -31,7 +31,7 @@
             android:id="@+id/tvTarifa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tarifa base"
+            android:text="@string/tarifa_base"
             android:textSize="14sp" />
 
     </LinearLayout>

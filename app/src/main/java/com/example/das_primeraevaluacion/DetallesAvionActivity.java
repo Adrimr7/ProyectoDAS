@@ -1,5 +1,6 @@
 package com.example.das_primeraevaluacion;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,10 +8,14 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.w3c.dom.Text;
 
+import com.example.das_primeraevaluacion.bd.AvionDAO;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,7 +23,6 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
 
     private TextView tvNombre, tvClase, tvTarifa, tvPasajeros, tvAlcance;
     private ImageView ivAvion;
-    private static final int EDITAR_AVION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,37 +62,78 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
             );
             fragment.show(getSupportFragmentManager(), "EditarAvion");
         });
+
+        Button btnBorrar = findViewById(R.id.btnBorrar);
+        btnBorrar.setOnClickListener(v -> {
+            new AlertDialog.Builder(v.getContext())
+                    .setTitle(R.string.confirmar_borrado)
+                    .setMessage(R.string.confirmar_texto)
+                    .setPositiveButton(R.string.eliminar, (dialog, which) -> {
+                        // Obtener el ID del avión desde el Intent
+                        int avionId = getIntent().getIntExtra("id", -1);
+                        if (avionId != -1) {
+                            AvionDAO avionDAO = new AvionDAO(v.getContext());
+                            avionDAO.borrarAvion(avionId);
+                            Toast.makeText(v.getContext(), R.string.avion_borrado, Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.btn_cancelar, (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+
     }
 
     private void actualizarInterfaz(String nombre, String clase, int tarifa, int pasajeros, int alcance) {
-        tvNombre.setText(nombre);
-        tvClase.setText("Es un " + clase + ".");
-        tvTarifa.setText("Tarifa base de: " + tarifa + " €.");
-        tvPasajeros.setText(pasajeros + " pasajeros.");
-        tvAlcance.setText(alcance + " km de alcance.");
+        System.out.println("DetallesAvionActivity: actualizarInterfaz");
 
-        if (clase.equals("Avioneta")) {
-            tvClase.setText("Es una " + clase + ".");
-        }
+        tvNombre.setText(nombre);
+
+        int claseResId = clase.equals("Avioneta") ? R.string.clase_avioneta_text : R.string.clase_text;
+        tvClase.setText(getString(claseResId, clase));
+
+        tvTarifa.setText(getString(R.string.tarifa_text, tarifa));
+        tvPasajeros.setText(getString(R.string.pasajeros_text, pasajeros));
+        tvAlcance.setText(getString(R.string.alcance_text, alcance));
     }
 
-    private void cargarImagen(String nombre) {
+    private void cargarImagen(String nombre){
+        System.out.println("DetallesAvionActivity: cargarImagen");
+
         String ruta = "images/" + nombre + ".jpg";
         try {
-            InputStream ims = getAssets().open(ruta);  // Usamos los assets para la imagen
-            Bitmap bitmap = BitmapFactory.decodeStream(ims);
-            ivAvion.setImageBitmap(bitmap);
-            ims.close();
-        } catch (IOException e) {
+            try (InputStream ims = getAssets().open(ruta)) {
+                Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                ivAvion.setImageBitmap(bitmap);
+            }
+            catch (FileNotFoundException e) {
+                InputStream ims = getAssets().open("images/generico.jpg");
+                Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                ivAvion.setImageBitmap(bitmap);
+                ims.close();
+            }
+        }
+        catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Error al cargar la imagen.");
+            System.out.println("Error al acceder a los assets.");
         }
     }
 
     @Override
     public void onAvionUpdated(Avion avion) {
+        System.out.println("DetallesAvionActivity: onAvionUpdated");
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("id", avion.getId());
+        resultIntent.putExtra("nombre", avion.getNombre());
+        resultIntent.putExtra("clase", avion.getClase());
+        resultIntent.putExtra("tarifa", avion.getTarifaBase());
+        resultIntent.putExtra("num_pasajeros", avion.getNumPasajeros());
+        resultIntent.putExtra("alcance_km", avion.getAlcanceKm());
+        setIntent(resultIntent);
+
         actualizarInterfaz(avion.getNombre(), avion.getClase(), avion.getTarifaBase(), avion.getNumPasajeros(), avion.getAlcanceKm());
         cargarImagen(avion.getNombre());
 
+        finish();
     }
 }

@@ -9,19 +9,31 @@
         android:id="@+id/etNombre"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre del avión" />
+        android:hint="@string/nombre_avion" />
 
     <EditText
         android:id="@+id/etClase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Clase" />
+        android:hint="@string/clase" />
 
     <EditText
         android:id="@+id/etTarifa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tarifa base" />
+        android:hint="@string/tarifa_base" />
+
+    <EditText
+        android:id="@+id/etPasajeros"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/num_pasajeros" />
+
+    <EditText
+        android:id="@+id/etAlcance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/alcance_km" />
 
     <Button
         android:id="@+id/btnGuardar"

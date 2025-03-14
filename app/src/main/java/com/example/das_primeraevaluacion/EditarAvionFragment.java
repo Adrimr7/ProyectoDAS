@@ -77,6 +77,7 @@ public class EditarAvionFragment extends DialogFragment {
         }
 
         btnGuardar.setOnClickListener(v -> {
+            System.out.println("FEditarAvion: btnGuardar");
             String nuevoNombre = etNombre.getText().toString().trim();
             String nuevaClase = etClase.getText().toString().trim();
             int nuevaTarifa = Integer.parseInt(etTarifa.getText().toString().trim());
@@ -96,6 +97,7 @@ public class EditarAvionFragment extends DialogFragment {
             }
             // Notificar a la actividad que el avión ha sido actualizado
             if (miListener != null) {
+                System.out.println("FEditarAvion: btnGuardar: Avion con cambios");
                 miListener.onAvionUpdated(avion);
             }
             Toast.makeText(getActivity(), "Avión actualizado", Toast.LENGTH_SHORT).show();
@@ -108,7 +110,7 @@ public class EditarAvionFragment extends DialogFragment {
             resultIntent.putExtra("num_pasajeros", nuevosPasajeros);
             resultIntent.putExtra("alcance_km", nuevoAlcance);
             getActivity().setResult(EDITAR_AVION_REQUEST_CODE, resultIntent);
-
+            System.out.println("FEditarAvion: btnGuardar: Intent hecho" + getActivity());
             dismiss(); // Cerrar el Fragment
         });
 

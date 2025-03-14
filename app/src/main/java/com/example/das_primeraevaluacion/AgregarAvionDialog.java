@@ -16,7 +16,7 @@ import androidx.fragment.app.DialogFragment;
 public class AgregarAvionDialog extends DialogFragment {
 
     public interface OnAvionAgregadoListener {
-        void onAvionAgregado(String nombre, String fabricante, int tarifa);
+        void onAvionAgregado(String nombre, String fabricante, int tarifa, int numPasajeros, int alcance);
     }
 
     private OnAvionAgregadoListener listener;
@@ -26,7 +26,8 @@ public class AgregarAvionDialog extends DialogFragment {
         super.onAttach(context);
         if (context instanceof OnAvionAgregadoListener) {
             listener = (OnAvionAgregadoListener) context;
-        } else {
+        }
+        else {
             throw new RuntimeException(context.toString() + " debe implementar OnAvionAgregadoListener");
         }
     }
@@ -42,6 +43,9 @@ public class AgregarAvionDialog extends DialogFragment {
         EditText etNombre = view.findViewById(R.id.etNombre);
         EditText etClase = view.findViewById(R.id.etClase);
         EditText etTarifa = view.findViewById(R.id.etTarifa);
+        EditText etPasajeros = view.findViewById(R.id.etPasajeros);
+        EditText etAlcance = view.findViewById(R.id.etAlcance);
+
         Button btnCancelar = view.findViewById(R.id.btnAgregar);
         Button btnGuardar = view.findViewById(R.id.btnGuardar);
 
@@ -55,6 +59,9 @@ public class AgregarAvionDialog extends DialogFragment {
             String nombre = etNombre.getText().toString().trim();
             String clase = etClase.getText().toString().trim();
             String tarifaStr = etTarifa.getText().toString().trim();
+
+            String numPasajeros = etPasajeros.getText().toString().trim();
+            String alcance = etAlcance.getText().toString().trim();
 
             boolean datosValidos = true;
 
@@ -71,23 +78,47 @@ public class AgregarAvionDialog extends DialogFragment {
                 etTarifa.setError("Este campo es obligatorio");
                 datosValidos = false;
             }
+            if (numPasajeros.isEmpty()) {
+                etPasajeros.setError("Este campo es obligatorio");
+                datosValidos = false;
+            }
+            if (alcance.isEmpty()) {
+                etAlcance.setError("Este campo es obligatorio");
+                datosValidos = false;
+            }
+            // valores por defecto
+            int tarifa = 500, pasajerosReal = 1, alcanceReal = 1000;
 
-            int tarifa = 0;
             if (!tarifaStr.isEmpty()) {
                 try {
                     tarifa = Integer.parseInt(tarifaStr);
-                    if (tarifa < 0) { // Asegurar que la tarifa no sea negativa
-                        etTarifa.setError("La tarifa debe ser un número positivo");
+                    pasajerosReal = Integer.parseInt(numPasajeros);
+                    alcanceReal = Integer.parseInt(alcance);
+                    if (tarifa < 0) {
+                        etTarifa.setError("La tarifa debe ser un número positivo.");
                         datosValidos = false;
                     }
-                } catch (NumberFormatException e) {
+                    if (pasajerosReal < 0) {
+                        etPasajeros.setError("Los pasajeros tienen que ser positivos.");
+                        datosValidos = false;
+                    }
+                    if (pasajerosReal > 900) {
+                        etPasajeros.setError("Numero incorrecto de pasajeros.");
+                        datosValidos = false;
+                    }
+                    if (alcanceReal < 0) {
+                        etAlcance.setError("El alcance tiene que ser un número positivo.");
+                        datosValidos = false;
+                    }
+                }
+                catch (NumberFormatException e) {
                     etTarifa.setError("Ingrese un número válido");
                     datosValidos = false;
                 }
             }
 
             if (datosValidos) {
-                listener.onAvionAgregado(nombre, clase, tarifa);
+                listener.onAvionAgregado(nombre, clase, tarifa, pasajerosReal, alcanceReal);
                 dismiss();
             }
         });

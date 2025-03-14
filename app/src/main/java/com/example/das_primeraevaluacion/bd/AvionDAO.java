@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.das_primeraevaluacion.Avion;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class AvionDAO {
     private final SQLiteDatabase db;
@@ -20,7 +18,6 @@ public class AvionDAO {
 
     // Insertar avión
     public long insertarAvion(Avion avion) {
-
         ContentValues values = new ContentValues();
         values.put("nombre", avion.getNombre());
         values.put("fabricante", avion.getFabricante());
@@ -33,16 +30,10 @@ public class AvionDAO {
         values.put("tamano_m", avion.getTamanoM());
 
         // Insertar el avión y devolver el ID generado
-        // System.out.println(avion.getNombre() + avion.getFabricante());
         return db.insert("aviones", null, values);
     }
 
-    public void cerrarBD(){
-        db.close();
-    }
-
     public void eliminarBD(){
-        System.out.println("eliminarBD");
         db.execSQL("DROP TABLE IF EXISTS " + AvionDBHelper.TABLE_AVIONES);
         String sqlCrearTabla = "CREATE TABLE " + AvionDBHelper.TABLE_AVIONES + " (" +
                 AvionDBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -60,8 +51,9 @@ public class AvionDAO {
     }
 
     // Obtener todos los aviones
-    public List<Avion> obtenerTodosLosAviones() {
-        List<Avion> listaAviones = new ArrayList<Avion>();
+    public ArrayList<Avion> obtenerTodosLosAviones() {
+        System.out.println("DAO: obtenerTodosLosAviones");
+        ArrayList<Avion> listaAviones = new ArrayList<Avion>();
         String query = "SELECT * FROM " + AvionDBHelper.TABLE_AVIONES;
         Cursor cursor = db.rawQuery(query, null);
 
@@ -87,6 +79,7 @@ public class AvionDAO {
         return listaAviones;
     }
     public int actualizarAvion(Avion avion) {
+        System.out.println("DAO: actualizarAvion");
         ContentValues values = new ContentValues();
         values.put("nombre", avion.getNombre());
         values.put("clase", avion.getClase());
@@ -95,5 +88,9 @@ public class AvionDAO {
         values.put("alcance_km", avion.getAlcanceKm());
 
         return db.update("aviones", values, "id = ?", new String[]{String.valueOf(avion.getId())});
+    }
+
+    public void borrarAvion(int id){
+        db.delete("aviones", "id = ?", new String[]{String.valueOf(id)});
     }
 }

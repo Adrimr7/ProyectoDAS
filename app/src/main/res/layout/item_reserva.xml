@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:layout_marginBottom="8dp">
+
+    <!-- Nombre del Pasajero -->
+    <TextView
+        android:id="@+id/tvNombrePasajero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nombre_pasajero"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Fecha de Reserva -->
+    <TextView
+        android:id="@+id/tvFechaReserva"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fecha_reserva"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"/>
+
+    <!-- Nombre del Avión -->
+    <TextView
+        android:id="@+id/tvAvionNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nombre_avion"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"/>
+
+</LinearLayout>
