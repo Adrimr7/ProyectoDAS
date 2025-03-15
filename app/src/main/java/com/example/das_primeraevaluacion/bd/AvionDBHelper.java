@@ -28,7 +28,6 @@ public class AvionDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // comentar esto
         String sqlCrearTabla = "CREATE TABLE " + TABLE_AVIONES + " (" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_NOMBRE + " TEXT, " +

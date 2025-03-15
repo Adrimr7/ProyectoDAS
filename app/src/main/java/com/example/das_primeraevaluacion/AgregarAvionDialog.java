@@ -32,6 +32,13 @@ public class AgregarAvionDialog extends DialogFragment {
         }
     }
 
+    /**
+     * @param savedInstanceState Bundle. Estado guardado de la actividad si existe.
+     * Se crea el dialogo, se añaden los listeners de los botones y se comprueban los datos introducidos.
+     * Si va bien, se añade el avion a BD.
+     * @return Dialog
+     */
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -141,6 +148,11 @@ public class AgregarAvionDialog extends DialogFragment {
         setRetainInstance(true);
     }
 
+    /**
+     *
+     * @param outState Bundle.
+     * Si va algo mal, se guarda lo que se haya escrito hasta el momento.
+     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);

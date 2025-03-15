@@ -29,6 +29,14 @@ public class ReservasFragment extends Fragment {
     private ArrayList<Reserva> listaReservas;
     private SharedPreferences prefs;
 
+    /**
+     * @param inflater LayoutInflater
+     * @param container ViewGroup
+     * @param savedInstanceState Bundle
+     * Se ejecuta al crear la vista. Se añaden los varios listeners que
+     * todavia no se usan, se usaran en el futuro.
+     * @return View vista
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         System.out.println("RFragment: onCreateView");
@@ -57,6 +65,10 @@ public class ReservasFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Se agregan a las preferencias las reservas por defecto.
+     * Se hara en el futuro mediante BD
+     */
     private void agregarReservasPorDefecto() {
         SharedPreferences.Editor editor = prefs.edit();
         Gson gson = new Gson();

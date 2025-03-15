@@ -15,7 +15,7 @@ public class Avion{
     private int tamanoM;
     private List<String> facilidades;
 
-    // Constructor
+    // Constructora. Facilidades se utilizaran mas adelante
     public Avion(int id, String nombre, String fabricante, String modelo, int alcanceKm, int numPasajeros,
                  int personalCabina, int tarifaBase, String clase, int tamanoM, List<String> facilidades) {
         this.id = id;

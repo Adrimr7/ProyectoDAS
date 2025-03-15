@@ -11,9 +11,14 @@ import java.util.ArrayList;
 
 public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaViewHolder> {
 
+    /**
+     * El clasico adapter para el modelo MVC (modelo-vista-controlador)
+     * Se implementa un listener para escuchar los cambios que se hacen de cara a
+     * gestionar las listas de las reservas.
+     */
     private ArrayList<Reserva> listaReservas;
 
-    // Constructor
+    // Constructora
     public ReservaAdapter(ArrayList<Reserva> listaReservas) {
         this.listaReservas = listaReservas;
     }

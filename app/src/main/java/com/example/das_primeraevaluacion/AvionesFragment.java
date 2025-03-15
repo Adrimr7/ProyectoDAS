@@ -10,9 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,9 +24,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
 
 public class AvionesFragment extends Fragment {
 
@@ -36,6 +32,15 @@ public class AvionesFragment extends Fragment {
     private ArrayList<Avion> listaAviones;
     private AvionDAO avionDAO;
 
+    /**
+     * Se ejecuta al crear la vista del fragment.
+     * Inicializa el RecyclerView con la lista de aviones y configura adapter con la BD.
+     *
+     * @param inflater LayoutInflater
+     * @param container ViewGroup
+     * @param savedInstanceState Bundle
+     * @return vista View.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         System.out.println("AFragment: onCreateView");
@@ -69,17 +74,23 @@ public class AvionesFragment extends Fragment {
         pasarGarbageCollector();
         return view;
     }
-
+    // comentado en MainActivity
     @Override
     public void onResume() {
         System.out.println("AFragment: onResume");
         super.onResume();
     }
-
+    // comentado en MainActivity
     public void pasarGarbageCollector(){
         Runtime garbage = Runtime.getRuntime();
         garbage.gc();
     }
+
+    /**
+     * Carga la lista de aviones desde un JSON y los añade a BD.
+     * Se usa un buffer y se les asigna un id autoincremental por la BD.
+     * @return ArrayList<Avion> Lista de aviones
+     */
 
     private ArrayList<Avion> cargarAvionesDesdeJSON() {
         System.out.println("AFragment: cargarAvionesDesdeJSON");
@@ -107,6 +118,9 @@ public class AvionesFragment extends Fragment {
         return aviones;
     }
 
+    /**
+     * Reinicia la base de datos, y carga otra vez los aviones desde el JSON.
+     */
     void resetearBD() {
         System.out.println("AFragment: resetearBD");
         avionDAO.eliminarBD();
@@ -115,8 +129,17 @@ public class AvionesFragment extends Fragment {
 
         getActivity().runOnUiThread(() -> avionAdapter.notifyDataSetChanged());
         pasarGarbageCollector();
-        //Toast.makeText(this.getContext(), getString(R.string.dialog_reset_db), Toast.LENGTH_SHORT).show();
     }
+
+    /**
+     * Se llama cuando se agrega un avión a BD y a la lista de aviones en el fragment.
+     * Se actualiza el RecyclerView y se envia una notificacion.
+     * @param nombre String
+     * @param clase String
+     * @param tarifa int
+     * @param numPasajeros int
+     * @param alcance int
+     */
 
     public void onAvionAgregado(String nombre, String clase, int tarifa, int numPasajeros, int alcance) {
         System.out.println("onAvionAgregado");
@@ -153,7 +176,12 @@ public class AvionesFragment extends Fragment {
         notificationManager.notify(1, builder.build());
 
     }
-
+    /**
+     * @param requestCode int
+     * @param resultCode int
+     * @param data Intent
+     * Se ejecuta al volver de la actividad, agrega el avion al fragment
+     */
     public void agregarAvion(int requestCode, int resultCode, Intent data) {
         System.out.println("Entrado a onActivityResult");
         if (resultCode == 0 && data != null) {
@@ -182,7 +210,15 @@ public class AvionesFragment extends Fragment {
             pasarGarbageCollector();
         }
     }
-
+    /**
+     * Se llama para agregar un avion a la BD
+     * Se actualiza el RecyclerView y se envia una notificacion.
+     * @param nombre String
+     * @param clase String
+     * @param tarifa int
+     * @param pasajerosReal int
+     * @param alcanceReal int
+     */
     public void agregarAvion(String nombre, String clase, int tarifa, int pasajerosReal, int alcanceReal) {
         Avion nuevoAvion = new Avion(0, nombre, "", "", alcanceReal, pasajerosReal, 0, tarifa, clase, 0, null);
         nuevoAvion.setId((int) avionDAO.insertarAvion(nuevoAvion));

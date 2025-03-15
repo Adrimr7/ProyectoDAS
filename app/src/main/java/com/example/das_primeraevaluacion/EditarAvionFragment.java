@@ -38,7 +38,16 @@ public class EditarAvionFragment extends DialogFragment {
         }
     }
 
-
+    /**
+     * Se ejecuta al crear la instancia.
+     * @param id int
+     * @param nombre String
+     * @param clase String
+     * @param tarifa int
+     * @param pasajeros int
+     * @param alcance int
+     * @return EditarAvionFragment
+     */
     public static EditarAvionFragment newInstance(int id, String nombre, String clase, int tarifa, int pasajeros, int alcance) {
         EditarAvionFragment fragment = new EditarAvionFragment();
         Bundle args = new Bundle();
@@ -52,6 +61,13 @@ public class EditarAvionFragment extends DialogFragment {
         return fragment;
     }
 
+    /**
+     * @param inflater LayoutInflater
+     * @param container ViewGroup
+     * @param savedInstanceState Bundle
+     * Se ejecuta al crear la vista. Se añaden los varios listeners.
+     * @return View vista
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

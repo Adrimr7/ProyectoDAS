@@ -6,7 +6,7 @@ public class Reserva {
     private String fechaReserva;
     private String avionNombre;
 
-    // Constructor
+    // Constructora. Se usaran las reservas mas adelante.
     public Reserva(int id, String nombrePasajero, String avionNombre, String fechaReserva) {
         this.id = id;
         this.nombrePasajero = nombrePasajero;

@@ -377,8 +377,8 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
      * @param tarifa int
      * @param numPasajeros int
      * @param alcance int
-     * Se ejecuta al agragar un avion
-     * Pasa los detalles al fragment correspondiente para actualizar la vista.
+     * Se ejecuta al agregar un avion
+     * Pasa los detalles al fragment para actualizar la vista.
      */
     @Override
     public void onAvionAgregado(String nombre, String clase, int tarifa, int numPasajeros, int alcance) {
@@ -394,6 +394,12 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         }
     }
 
+    /**
+     * @param requestCode int
+     * @param resultCode int
+     * @param data Intent
+     * Se ejecuta al volver de la actividad, agrega el avion al fragment
+     */
     // Este método se llama cuando volvemos de la actividad de detalles (editar)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -409,6 +415,10 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         }
     }
 
+    /**
+     * Se ejecuta cuando la app vuelve de una pausa o al volver a la activity.
+     * Se pasa el garbage collector.
+     */
     @Override
     protected void onResume() {
         System.out.println("MainActivity: onResume");
@@ -416,7 +426,9 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         pasarGarbageCollector();
         cambiarFragement(new AvionesFragment());
     }
-
+    /**
+     * Se crea el canal para las notificaciones si no está ya creado
+     */
     private void crearCanalNotificacion() {
         String channelId = "aviones_channel";
         CharSequence name = "Aviones";
@@ -431,6 +443,10 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             notificationManager.createNotificationChannel(channel);
         }
     }
+    /**
+     * @param fragment (AvionesFragment o ReservasFragment)
+     * Se cambia el fragmento en caso de que sea necesario
+     */
     private void replaceFragment(Fragment fragment) {
         System.out.println("MainActivity: replaceFragment");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -441,6 +457,10 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             transaction.commitAllowingStateLoss();
         }
     }
+    /**
+     * @param fragment (AvionesFragment o ReservasFragment)
+     * Se cambia el fragmento en cualquier caso
+     */
     private void cambiarFragement(Fragment fragment){
         System.out.println("MainActivity: cambiarFragement");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -448,6 +468,11 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         transaction.addToBackStack(null);
         transaction.commitAllowingStateLoss();
     }
+
+    /**
+     * Se pasa el colector de basura de Runtime.
+     * Se usa con frecuencia para hacer mas eficiente la app.
+     */
     public void pasarGarbageCollector(){
         Runtime garbage = Runtime.getRuntime();
         garbage.gc();

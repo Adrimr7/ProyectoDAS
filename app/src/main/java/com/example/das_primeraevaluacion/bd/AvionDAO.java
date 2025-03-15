@@ -11,12 +11,20 @@ import java.util.ArrayList;
 public class AvionDAO {
     private final SQLiteDatabase db;
 
+    /**
+     * @param context
+     * La constructora de la DAO
+     */
     public AvionDAO(Context context) {
         AvionDBHelper dbHelper = new AvionDBHelper(context);
         this.db = dbHelper.getWritableDatabase();
     }
 
-    // Insertar avión
+    /**
+     * @param avion El avion a insertar
+     * Se inserta el avion en BD
+     * @return el Id generado por la BD
+     */
     public long insertarAvion(Avion avion) {
         ContentValues values = new ContentValues();
         values.put("nombre", avion.getNombre());
@@ -33,6 +41,9 @@ public class AvionDAO {
         return db.insert("aviones", null, values);
     }
 
+    /**
+     * Se elimina la BD en su totalidad.
+     */
     public void eliminarBD(){
         db.execSQL("DROP TABLE IF EXISTS " + AvionDBHelper.TABLE_AVIONES);
         String sqlCrearTabla = "CREATE TABLE " + AvionDBHelper.TABLE_AVIONES + " (" +
@@ -50,7 +61,10 @@ public class AvionDAO {
         db.execSQL(sqlCrearTabla);
     }
 
-    // Obtener todos los aviones
+    /**
+     * Se obtienen todos los aviones de BD
+     * @return ArrayList<Avion> listaAviones.
+     */
     public ArrayList<Avion> obtenerTodosLosAviones() {
         System.out.println("DAO: obtenerTodosLosAviones");
         ArrayList<Avion> listaAviones = new ArrayList<Avion>();
@@ -78,6 +92,12 @@ public class AvionDAO {
         cursor.close();
         return listaAviones;
     }
+
+    /**
+     * @param avion
+     * Se actualiza el contenido del avion en BD
+     * @return boolean si se ha actualizado correctamente
+     */
     public int actualizarAvion(Avion avion) {
         System.out.println("DAO: actualizarAvion");
         ContentValues values = new ContentValues();
@@ -90,6 +110,10 @@ public class AvionDAO {
         return db.update("aviones", values, "id = ?", new String[]{String.valueOf(avion.getId())});
     }
 
+    /**
+     * @param id
+     * Se borra el avion con la id.
+     */
     public void borrarAvion(int id){
         db.delete("aviones", "id = ?", new String[]{String.valueOf(id)});
     }

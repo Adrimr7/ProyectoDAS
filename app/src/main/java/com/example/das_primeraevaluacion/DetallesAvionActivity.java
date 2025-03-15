@@ -24,6 +24,12 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
     private TextView tvNombre, tvClase, tvTarifa, tvPasajeros, tvAlcance;
     private ImageView ivAvion;
 
+
+    /**
+     * Inicializa la actividad de detalles de un avión.
+     * Obtiene los datos del Intent, los muestra y configura los listeners de los botones.
+     * @param savedInstanceState Bundle.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +90,15 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
 
     }
 
+    /**
+     * Actualiza la interfaz de usuario con los datos del avión.
+     * @param nombre String
+     * @param clase String
+     * @param tarifa int
+     * @param pasajeros int
+     * @param alcance int
+     */
+
     private void actualizarInterfaz(String nombre, String clase, int tarifa, int pasajeros, int alcance) {
         System.out.println("DetallesAvionActivity: actualizarInterfaz");
 
@@ -96,7 +111,12 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
         tvPasajeros.setText(getString(R.string.pasajeros_text, pasajeros));
         tvAlcance.setText(getString(R.string.alcance_text, alcance));
     }
-
+    /**
+     * Carga la imagen del avión en la interfaz.
+     * Si no se encuentra, imagen genérica.
+     *
+     * @param nombre Nombre del avion
+     */
     private void cargarImagen(String nombre){
         System.out.println("DetallesAvionActivity: cargarImagen");
 
