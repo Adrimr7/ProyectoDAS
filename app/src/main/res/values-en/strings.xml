@@ -41,4 +41,12 @@
     <string name="avion_borrado">Deleted Aircraft</string>
     <string name="texto_siguiente">Bookings will be implemented later</string>
     <string name="atras_2">Press back again to exit the app</string>
+    <string name="email">Your email here</string>
+    <string name="contrasena">Password</string>
+    <string name="iniciar_sesion">Log in</string>
+    <string name="ir_a_registro">Don\'t have an account? Register</string>
+    <string name="ir_a_login">Already have an account? Log in</string>
+    <string name="crear_cuenta">Create account</string>
+    <string name="menu_logout">Log out</string>
+    <string name="perfil_usuario">User profile</string>
 </resources>

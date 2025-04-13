@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
     private ActionBarDrawerToggle toggle;
     private long tiempoPresionadoAtras = 0;
 
-
     /**
      * @param savedInstanceState Estado guardado de la actividad, si existe.
      * Inicializa la actividad, configura el drawer, la toolbar y establece el idioma.
@@ -100,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
                     replaceFragment(new ReservasFragment());
                 }
             }
+            else if (id == R.id.nav_perfil) {
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (!(fragment instanceof PerfilFragment)) {
+                    replaceFragment(new PerfilFragment());
+                }
+            }
             drawerLayout.closeDrawers();
             return true;
         });
@@ -153,13 +158,20 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("My_Lang", codigoIdioma);
             editor.apply();
-            if (findViewById(R.id.tvTitulo)== null) {
+            if (findViewById(R.id.tvTitulo)== null && findViewById(R.id.tvTituloPerfil)== null) {
+                // fragmento de reservas
                 TextView viewById3 = findViewById(R.id.tvTituloReservas);
                 viewById3.setText(R.string.mis_reservas);
                 TextView viewById4 = findViewById(R.id.tvSiguiente);
                 viewById4.setText(R.string.texto_siguiente);
             }
+            else if (findViewById(R.id.tvTituloPerfil)!=null) {
+                // fragmento de perfil
+                TextView viewById = findViewById(R.id.tvTituloPerfil);
+                viewById.setText(R.string.perfil_usuario);
+            }
             else {
+                // otros fragmentos
                 TextView viewById = findViewById(R.id.tvTitulo);
                 viewById.setText(R.string.app_name);
             }
@@ -209,11 +221,34 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             replaceFragment(new ReservasFragment());
             pasarGarbageCollector();
         }
+        else if (item.getItemId() == R.id.nav_logout) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Cerrar sesión")
+                    .setMessage("¿Estás seguro de que quieres cerrar sesión?")
+                    .setPositiveButton("Sí", (dialog, which) -> {
+                        // aqui se hace el logout real
+                        logout();
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+        }
         else {
             return super.onOptionsItemSelected(item);
         }
         return true;
     }
+
+    /**
+     * Hacer logout de la app y eliminar el backstack.
+     */
+    private void logout() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+
     /**
      * Actualiza los textos concretos del menu al cambiar de idioma.
      */

@@ -1,19 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@mipmap/ic_icono_persona"
+            android:title="@string/perfil_usuario"/>
+
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home"
             android:title="@string/menu_home"/>
 
         <item
-            android:id="@+id/nav_add"
-            android:icon="@drawable/ic_add"
-            android:title="@string/menu_add"/>
-
-        <item
             android:id="@+id/nav_reservas"
             android:icon="@drawable/ic_reserva"
             android:title="@string/menu_reservas"/>
+
+        <item
+            android:id="@+id/nav_add"
+            android:icon="@drawable/ic_add"
+            android:title="@string/menu_add"/>
 
     </group>
 </menu>

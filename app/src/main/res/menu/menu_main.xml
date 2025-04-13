@@ -14,6 +14,11 @@
             android:title="@string/menu_reset"/>
 
         <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_home"
+            android:title="@string/menu_logout"/>
+
+        <item
             android:title="@string/cambiar_idioma"
             android:id="@+id/btnCambiarIdioma"
             app:showAsAction="ifRoom"
