@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
@@ -21,7 +22,14 @@ import com.example.das_primeraevaluacion.bd.AvionDAO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -52,28 +60,54 @@ public class AvionesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         listaAviones = avionDAO.obtenerTodosLosAviones();
-        ArrayList<Avion> arr = new ArrayList<Avion>();
-        if (Objects.equals(listaAviones, arr)) {
-            listaAviones = cargarAvionesDesdeJSON();
+
+        // si la bd es vacia, cargar desde php
+        if (listaAviones.isEmpty()) {
+            ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.VISIBLE);
+            new Thread(() -> {
+                ArrayList<Avion> avionesRemotos = cargarAvionesDesdeRemoto();
+                // hilo ppal
+                requireActivity().runOnUiThread(() -> {
+                    listaAviones = avionesRemotos;
+                    avionAdapter = new AvionAdapter(listaAviones, avion -> {
+                        Intent intent = new Intent(getContext(), DetallesAvionActivity.class);
+                        intent.putExtra("id", avion.getId());
+                        intent.putExtra("nombre", avion.getNombre());
+                        intent.putExtra("clase", avion.getClase());
+                        intent.putExtra("tarifa", avion.getTarifaBase());
+                        intent.putExtra("num_pasajeros", avion.getNumPasajeros());
+                        intent.putExtra("alcance_km", avion.getAlcanceKm());
+                        startActivity(intent);
+                    });
+
+                    recyclerView.setAdapter(avionAdapter);
+                    avionAdapter.notifyDataSetChanged();
+                    pasarGarbageCollector();
+                    progressBar.setVisibility(View.GONE);
+                });
+            }).start();
+        } else {
+            // si ya hay datos locales, mostrar
+            avionAdapter = new AvionAdapter(listaAviones, avion -> {
+                Intent intent = new Intent(getContext(), DetallesAvionActivity.class);
+                intent.putExtra("id", avion.getId());
+                intent.putExtra("nombre", avion.getNombre());
+                intent.putExtra("clase", avion.getClase());
+                intent.putExtra("tarifa", avion.getTarifaBase());
+                intent.putExtra("num_pasajeros", avion.getNumPasajeros());
+                intent.putExtra("alcance_km", avion.getAlcanceKm());
+                startActivity(intent);
+            });
+
+            recyclerView.setAdapter(avionAdapter);
+            avionAdapter.notifyDataSetChanged();
+            pasarGarbageCollector();
         }
 
-        avionAdapter = new AvionAdapter(listaAviones, avion -> {
-            Intent intent = new Intent(getContext(), DetallesAvionActivity.class);
-            intent.putExtra("id", avion.getId());
-            intent.putExtra("nombre", avion.getNombre());
-            intent.putExtra("clase", avion.getClase());
-            intent.putExtra("tarifa", avion.getTarifaBase());
-            intent.putExtra("num_pasajeros", avion.getNumPasajeros());
-            intent.putExtra("alcance_km", avion.getAlcanceKm());
-            getActivity().runOnUiThread(() -> startActivity(intent));
-        });
-
-        recyclerView.setAdapter(avionAdapter);
-
-        avionAdapter.notifyDataSetChanged();
-        pasarGarbageCollector();
         return view;
     }
+
     // comentado en MainActivity
     @Override
     public void onResume() {
@@ -118,17 +152,107 @@ public class AvionesFragment extends Fragment {
         return aviones;
     }
 
+    private ArrayList<Avion> cargarAvionesDesdeRemoto() {
+        System.out.println("AFragment: cargarAvionesDesdeRemoto");
+        ArrayList<Avion> aviones = new ArrayList<>();
+        HttpURLConnection conn = null;
+        BufferedReader reader = null;
+
+        try {
+
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/obtenerAviones.php"); // cámbialo por tu URL real
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(2000);
+            conn.setReadTimeout(2000);
+            conn.connect();
+
+            InputStream is = conn.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            StringBuilder jsonBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonBuilder.append(line);
+            }
+
+            JSONArray jsonArray = new JSONObject(jsonBuilder.toString()).getJSONArray("jets");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
+                Avion avion = new Avion(
+                        0,
+                        obj.getString("nombre"),
+                        obj.getString("fabricante"),
+                        obj.getString("modelo"),
+                        obj.getInt("alcance_km"),
+                        obj.getInt("num_pasajeros"),
+                        obj.getInt("personal_cabina"),
+                        obj.getInt("tarifa_base"),
+                        obj.getString("clase"),
+                        obj.getInt("tamano_m"),
+                        null // Suponemos que las "facilidades" las puedes tratar aparte si lo necesitas
+                );
+
+                avion.setId((int) avionDAO.insertarAvion(avion));
+                aviones.add(avion);
+            }
+
+            pasarGarbageCollector();
+
+        } catch (Exception e) {
+            Log.e("HTTP_JSON_ERROR", "Error al cargar JSON remoto", e);
+        } finally {
+            if (reader != null) try { reader.close(); } catch (IOException ignored) {}
+            if (conn != null) conn.disconnect();
+        }
+
+        return aviones;
+    }
+
+
     /**
      * Reinicia la base de datos, y carga otra vez los aviones desde el JSON.
      */
     void resetearBD() {
         System.out.println("AFragment: resetearBD");
+
+        ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
         avionDAO.eliminarBD();
         listaAviones.clear();
-        listaAviones = cargarAvionesDesdeJSON();
 
-        getActivity().runOnUiThread(() -> avionAdapter.notifyDataSetChanged());
-        pasarGarbageCollector();
+        new Thread(() -> {
+            try {
+
+                URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/resetearBD.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+                conn.connect();
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    System.out.println("BD remota vaciada con éxito.");
+                } else {
+                    System.out.println("Error al vaciar la BD remota: " + responseCode);
+                }
+
+                conn.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            ArrayList<Avion> avionesRemotos = cargarAvionesDesdeRemoto();
+
+            requireActivity().runOnUiThread(() -> {
+                listaAviones = avionesRemotos;
+                avionAdapter.notifyDataSetChanged();
+                pasarGarbageCollector();
+
+                progressBar.setVisibility(View.GONE);
+            });
+        }).start();
     }
 
     /**
@@ -229,6 +353,43 @@ public class AvionesFragment extends Fragment {
             mostrarNotificacion("ERROR" + exc);
         }
         mostrarNotificacion(nombre);
+
+        new Thread(() -> {
+            try {
+                URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/anadirAvion.php");
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+
+                String postData = "nombre=" + URLEncoder.encode(nuevoAvion.getNombre(), "UTF-8") +
+                        "&fabricante=" + URLEncoder.encode(nuevoAvion.getFabricante(), "UTF-8") +
+                        "&modelo=" + URLEncoder.encode(nuevoAvion.getModelo(), "UTF-8") +
+                        "&alcance_km=" + nuevoAvion.getAlcanceKm() +
+                        "&num_pasajeros=" + nuevoAvion.getNumPasajeros() +
+                        "&personal_cabina=" + nuevoAvion.getPersonalCabina() +
+                        "&tarifa_base=" + nuevoAvion.getTarifaBase() +
+                        "&clase=" + URLEncoder.encode(nuevoAvion.getClase(), "UTF-8") +
+                        "&tamano_m=" + nuevoAvion.getTamanoM() +
+                        "&facilidades=" + "vacio";
+
+                conn.getOutputStream().write(postData.getBytes("UTF-8"));
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    System.out.println("Avión añadido correctamente a la BD remota.");
+                } else {
+                    System.out.println("Error al añadir avión a la BD remota: " + responseCode);
+                }
+
+                conn.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
     }
 }
 
