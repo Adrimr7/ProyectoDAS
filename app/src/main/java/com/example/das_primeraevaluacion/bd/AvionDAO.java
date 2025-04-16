@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.das_primeraevaluacion.Avion;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 public class AvionDAO {
@@ -67,7 +71,7 @@ public class AvionDAO {
      */
     public ArrayList<Avion> obtenerTodosLosAviones() {
         System.out.println("DAO: obtenerTodosLosAviones");
-        ArrayList<Avion> listaAviones = new ArrayList<Avion>();
+        ArrayList<Avion> listaAviones = new ArrayList<>();
         String query = "SELECT * FROM " + AvionDBHelper.TABLE_AVIONES;
         Cursor cursor = db.rawQuery(query, null);
 
@@ -84,9 +88,21 @@ public class AvionDAO {
                 String clase = cursor.getString(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_CLASE));
                 int tamano = cursor.getInt(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_TAMANO));
 
-                listaAviones.add(new Avion(id, nombre, fabricante, modelo, alcance, numPasajeros, personalCabina, tarifaBase, clase, tamano, new ArrayList<>()));
-            }
-            while (cursor.moveToNext());
+                ArrayList<String> facilidades = new ArrayList<>();
+                String facilidadesJson = cursor.getString(cursor.getColumnIndexOrThrow(AvionDBHelper.COLUMN_FACILIDADES));
+                if (facilidadesJson != null && !facilidadesJson.isEmpty()) {
+                    try {
+                        JSONArray array = new JSONArray(facilidadesJson);
+                        for (int i = 0; i < array.length(); i++) {
+                            facilidades.add(array.getString(i));
+                        }
+                    } catch (JSONException e) {
+                        System.out.println("Error al cargar las facilidades");
+                    }
+                }
+
+                listaAviones.add(new Avion(id, nombre, fabricante, modelo, alcance, numPasajeros, personalCabina, tarifaBase, clase, tamano, facilidades));
+            } while (cursor.moveToNext());
         }
 
         cursor.close();

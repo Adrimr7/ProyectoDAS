@@ -1,12 +1,14 @@
 package com.example.das_primeraevaluacion;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,6 +25,12 @@ import java.util.Date;
 import java.util.Locale;
 
 public class ReservasFragment extends Fragment {
+
+    /*
+    Datos para aeropuertos adaptados desde:
+    (https://ourairports.com/data/ y https://github.com/davidmegginson/ourairports-data)
+     */
+
 
     private RecyclerView recyclerView;
     private ReservaAdapter reservaAdapter;
@@ -62,6 +70,13 @@ public class ReservasFragment extends Fragment {
         recyclerView.setAdapter(reservaAdapter);
         reservaAdapter.notifyDataSetChanged();
 
+
+        Button btnReserva = view.findViewById(R.id.btnAnadirReserva);
+        btnReserva.setOnClickListener(v -> {
+            NuevaReservaDialog nuevaReservaDialog = new NuevaReservaDialog();
+            nuevaReservaDialog.show(getFragmentManager(), "nuevaReserva");
+        });
+
         return view;
     }
 
@@ -74,9 +89,9 @@ public class ReservasFragment extends Fragment {
         Gson gson = new Gson();
 
         ArrayList<Reserva> reservasPorDefecto = new ArrayList<>();
-        reservasPorDefecto.add(new Reserva(1, "Pepe Pepez", "Gulfstream G600", "2025-06-23"));
-        reservasPorDefecto.add(new Reserva(2, "John Johnson", "Gulfstream G700", "2025-04-15"));
-        reservasPorDefecto.add(new Reserva(3, "Gonzalo González", "Cessna Citation X+", "2025-06-11"));
+        reservasPorDefecto.add(new Reserva(1, "pepe@gmail.com", "Gulfstream G600", "2025-06-23", null, null));
+        reservasPorDefecto.add(new Reserva(2, "johnlook@gmail.com", "Gulfstream G700", "2025-04-15", null, null));
+        reservasPorDefecto.add(new Reserva(3, "gonzi@outlook.es", "Cessna Citation X+", "2025-06-11", null, null));
 
         String jsonReservas = gson.toJson(reservasPorDefecto);
         editor.putString("lista_reservas", jsonReservas);
@@ -108,6 +123,7 @@ public class ReservasFragment extends Fragment {
         editor.apply();
         reservaAdapter.notifyItemRemoved(position);
     }
+    /*
     private void guardarReserva(String nombreAvion) {
         SharedPreferences.Editor editor = prefs.edit();
 
@@ -130,6 +146,7 @@ public class ReservasFragment extends Fragment {
 
         actualizarLista();
     }
+     */
 
     private void actualizarLista() {
         if (reservaAdapter != null) {

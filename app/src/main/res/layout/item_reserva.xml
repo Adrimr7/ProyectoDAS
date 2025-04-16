@@ -7,16 +7,14 @@
     android:background="?android:attr/selectableItemBackground"
     android:layout_marginBottom="8dp">
 
-    <!-- Nombre del Pasajero -->
     <TextView
-        android:id="@+id/tvNombrePasajero"
+        android:id="@+id/tvEmailPasajero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/nombre_pasajero"
+        android:text="@string/email_pasajero"
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <!-- Fecha de Reserva -->
     <TextView
         android:id="@+id/tvFechaReserva"
         android:layout_width="wrap_content"
@@ -25,7 +23,6 @@
         android:textSize="14sp"
         android:textColor="@android:color/darker_gray"/>
 
-    <!-- Nombre del Avión -->
     <TextView
         android:id="@+id/tvAvionNombre"
         android:layout_width="wrap_content"

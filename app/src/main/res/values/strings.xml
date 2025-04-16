@@ -49,4 +49,10 @@
     <string name="crear_cuenta">Crear cuenta</string>
     <string name="menu_logout">Cerrar sesión</string>
     <string name="perfil_usuario">Mi perfil</string>
+    <string name="confirmar_logout">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="si">Sí</string>
+    <string name="no">No</string>
+    <string name="redireccion_reservas">Se te redigirá a la pestaña de reservas.</string>
+    <string name="email_pasajero">Email del pasajero</string>
+    <string name="tu_ubicacion">Tu ubicación</string>
 </resources>

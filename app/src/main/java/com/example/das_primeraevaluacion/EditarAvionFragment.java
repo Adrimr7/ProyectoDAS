@@ -2,6 +2,7 @@ package com.example.das_primeraevaluacion;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.example.das_primeraevaluacion.bd.AvionDAO;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class EditarAvionFragment extends DialogFragment {
     private EditText etNombre, etClase, etTarifa, etPasajeros, etAlcance;
@@ -76,6 +81,8 @@ public class EditarAvionFragment extends DialogFragment {
         avionDAO = new AvionDAO(getActivity());
 
         etNombre = view.findViewById(R.id.etNombre);
+        // linea para evitar cambiar el nombre, que es la clave.
+        etNombre.setFocusable(false);
         etClase = view.findViewById(R.id.etClase);
         etTarifa = view.findViewById(R.id.etTarifa);
         etPasajeros = view.findViewById(R.id.etPasajeros);
@@ -111,7 +118,41 @@ public class EditarAvionFragment extends DialogFragment {
             if (numFilas == 0) {
                 Toast.makeText(getActivity(), "Error al actualizar el avión", Toast.LENGTH_SHORT).show();
             }
-            // Notificar a la actividad que el avión ha sido actualizado
+            else {
+                // actualizar el avion en BD.
+                new Thread(() -> {
+                    try {
+                        URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/editarAvion.php");
+
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("POST");
+                        conn.setDoOutput(true);
+                        conn.setConnectTimeout(2000);
+                        conn.setReadTimeout(2000);
+
+                        String postData = "nombre=" + URLEncoder.encode(nuevoNombre, "UTF-8") +
+                                "&alcance_km=" + nuevoAlcance +
+                                "&num_pasajeros=" + nuevosPasajeros +
+                                "&tarifa_base=" + nuevaTarifa +
+                                "&clase=" + URLEncoder.encode(nuevaClase, "UTF-8");
+
+                        System.out.println("Agregando avion: " + postData);
+                        conn.getOutputStream().write(postData.getBytes("UTF-8"));
+
+                        int responseCode = conn.getResponseCode();
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            System.out.println("Avión editado correctamente");
+                        } else {
+                            System.out.println("Error al editar avión a la BD remota: " + responseCode);
+                        }
+
+                        conn.disconnect();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
+            // notificar a la actividad que el avión ha sido actualizado
             if (miListener != null) {
                 System.out.println("FEditarAvion: btnGuardar: Avion con cambios");
                 miListener.onAvionUpdated(avion);

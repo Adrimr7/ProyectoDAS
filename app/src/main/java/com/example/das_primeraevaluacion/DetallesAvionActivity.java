@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,9 @@ import com.example.das_primeraevaluacion.bd.AvionDAO;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class DetallesAvionActivity extends AppCompatActivity implements EditarAvionFragment.OnAvionUpdatedListener {
 
@@ -75,18 +79,48 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
                     .setTitle(R.string.confirmar_borrado)
                     .setMessage(R.string.confirmar_texto)
                     .setPositiveButton(R.string.eliminar, (dialog, which) -> {
-                        // Obtener el ID del avión desde el Intent
-                        int avionId = getIntent().getIntExtra("id", -1);
-                        if (avionId != -1) {
-                            AvionDAO avionDAO = new AvionDAO(v.getContext());
-                            avionDAO.borrarAvion(avionId);
-                            Toast.makeText(v.getContext(), R.string.avion_borrado, Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
+                        new Thread(() -> {
+                            eliminarAvion(v);
+                        }).start();
+                        Toast.makeText(v.getContext(), R.string.avion_borrado, Toast.LENGTH_SHORT).show();
+                        finish();
                     })
                     .setNegativeButton(R.string.btn_cancelar, (dialog, which) -> dialog.dismiss())
                     .show();
         });
+
+    }
+
+    private void eliminarAvion(View v) {
+        // Obtener el ID del avión desde el Intent
+        int avionId = getIntent().getIntExtra("id", -1);
+        if (avionId != -1) {
+            AvionDAO avionDAO = new AvionDAO(v.getContext());
+            avionDAO.borrarAvion(avionId);
+            // borrar avion de la BD remota
+            String nombreAvion = getIntent().getStringExtra("nombre");
+                try {
+                    URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/borrarAvion.php");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+                    conn.setConnectTimeout(2000);
+                    conn.setReadTimeout(2000);
+                    String postData = "nombre=" + URLEncoder.encode(nombreAvion, "UTF-8");
+                    System.out.println("Borrando avion: " + postData);
+                    conn.getOutputStream().write(postData.getBytes("UTF-8"));
+
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        System.out.println("Avión borrado correctamente de la BD remota.");
+                    } else {
+                        System.out.println("Error al borrar avión a la BD remota: " + responseCode);
+                    }
+
+                    conn.disconnect();
+                } catch (Exception ignored) {
+                }
+            }
 
     }
 

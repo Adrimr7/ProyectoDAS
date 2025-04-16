@@ -33,7 +33,7 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaV
     public void onBindViewHolder(ReservaViewHolder holder, int position) {
         Reserva reserva = listaReservas.get(position);
 
-        holder.tvNombrePasajero.setText(reserva.getNombrePasajero());
+        holder.tvEmailPasajero.setText(reserva.getEmailPasajero());
         holder.tvFechaReserva.setText(reserva.getFechaReserva());
         holder.tvAvionNombre.setText(reserva.getAvionNombre());
     }
@@ -47,11 +47,11 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaV
     }
 
     public static class ReservaViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvNombrePasajero, tvFechaReserva, tvAvionNombre;
+        public TextView tvEmailPasajero, tvFechaReserva, tvAvionNombre;
 
         public ReservaViewHolder(View itemView) {
             super(itemView);
-            tvNombrePasajero = itemView.findViewById(R.id.tvNombrePasajero);
+            tvEmailPasajero = itemView.findViewById(R.id.tvEmailPasajero);
             tvFechaReserva = itemView.findViewById(R.id.tvFechaReserva);
             tvAvionNombre = itemView.findViewById(R.id.tvAvionNombre);
         }

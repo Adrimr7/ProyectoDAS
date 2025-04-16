@@ -49,4 +49,10 @@
     <string name="crear_cuenta">Create account</string>
     <string name="menu_logout">Log out</string>
     <string name="perfil_usuario">User profile</string>
+    <string name="confirmar_logout">Are you sure you want to log out?</string>
+    <string name="si">Yes</string>
+    <string name="no">No</string>
+    <string name="redireccion_reservas">You will be redirected to the bookings tab.</string>
+    <string name="email_pasajero">Passenger mail</string>
+    <string name="tu_ubicacion">Your location</string>
 </resources>

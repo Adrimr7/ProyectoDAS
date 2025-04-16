@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="4dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- checkbox para marcar -->
+    <CheckBox
+        android:id="@+id/checkBoxSeleccion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp" />
+
+    <TextView
+        android:id="@+id/nombreAeropuerto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Nombre del Aeropuerto"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/codigoIcao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CodigoIcao"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:paddingEnd="6sp"/>
+
+    <TextView
+        android:id="@+id/paisAeropuerto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="País"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray" />
+</LinearLayout>

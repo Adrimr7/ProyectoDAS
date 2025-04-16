@@ -26,13 +26,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class AvionesFragment extends Fragment {
 
@@ -60,12 +58,13 @@ public class AvionesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         listaAviones = avionDAO.obtenerTodosLosAviones();
+        ProgressBar progressBar = view.findViewById(R.id.progressBar);
 
         // si la bd es vacia, cargar desde php
         if (listaAviones.isEmpty()) {
-            ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.VISIBLE);
+
             new Thread(() -> {
+                progressBar.setVisibility(View.VISIBLE);
                 ArrayList<Avion> avionesRemotos = cargarAvionesDesdeRemoto();
                 // hilo ppal
                 requireActivity().runOnUiThread(() -> {
@@ -160,7 +159,7 @@ public class AvionesFragment extends Fragment {
 
         try {
 
-            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/obtenerAviones.php"); // cámbialo por tu URL real
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/obtenerAviones.php");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(2000);
@@ -216,7 +215,9 @@ public class AvionesFragment extends Fragment {
         System.out.println("AFragment: resetearBD");
 
         ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
+        requireActivity().runOnUiThread(() -> {
+            progressBar.setVisibility(View.VISIBLE);
+        });
 
         avionDAO.eliminarBD();
         listaAviones.clear();
@@ -227,14 +228,38 @@ public class AvionesFragment extends Fragment {
                 URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/resetearBD.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(5000);
+                conn.setConnectTimeout(2000);
+                conn.setReadTimeout(2000);
                 conn.connect();
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     System.out.println("BD remota vaciada con éxito.");
-                } else {
+                }
+                else {
+                    System.out.println("Error al vaciar la BD remota: " + responseCode);
+                }
+
+                conn.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // llamar a la función que mete los aviones desde el JSON
+
+            try {
+
+                URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/cargarAvionesDesdeJSON.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(2000);
+                conn.setReadTimeout(2000);
+                conn.connect();
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    System.out.println("BD remota vaciada con éxito.");
+                }
+                else {
                     System.out.println("Error al vaciar la BD remota: " + responseCode);
                 }
 
@@ -276,6 +301,7 @@ public class AvionesFragment extends Fragment {
             mostrarNotificacion("ERROR" + exc);
         }
         mostrarNotificacion(nombre);
+        // anadir avion usando el php
     }
 
     private void mostrarNotificacion(String nombreAvion) {
@@ -344,7 +370,7 @@ public class AvionesFragment extends Fragment {
      * @param alcanceReal int
      */
     public void agregarAvion(String nombre, String clase, int tarifa, int pasajerosReal, int alcanceReal) {
-        Avion nuevoAvion = new Avion(0, nombre, "", "", alcanceReal, pasajerosReal, 0, tarifa, clase, 0, null);
+        Avion nuevoAvion = new Avion(0, nombre, "Desconocido", "Desconocido", alcanceReal, pasajerosReal, 0, tarifa, clase, 0, null);
         nuevoAvion.setId((int) avionDAO.insertarAvion(nuevoAvion));
         listaAviones.add(nuevoAvion);
         try {
@@ -361,8 +387,8 @@ public class AvionesFragment extends Fragment {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(5000);
+                conn.setConnectTimeout(2000);
+                conn.setReadTimeout(2000);
 
                 String postData = "nombre=" + URLEncoder.encode(nuevoAvion.getNombre(), "UTF-8") +
                         "&fabricante=" + URLEncoder.encode(nuevoAvion.getFabricante(), "UTF-8") +
@@ -373,8 +399,8 @@ public class AvionesFragment extends Fragment {
                         "&tarifa_base=" + nuevoAvion.getTarifaBase() +
                         "&clase=" + URLEncoder.encode(nuevoAvion.getClase(), "UTF-8") +
                         "&tamano_m=" + nuevoAvion.getTamanoM() +
-                        "&facilidades=" + "vacio";
-
+                        "&facilidades=" + URLEncoder.encode("vacio", "UTF-8");
+                System.out.println("Agregando avion: " + postData);
                 conn.getOutputStream().write(postData.getBytes("UTF-8"));
 
                 int responseCode = conn.getResponseCode();

@@ -75,9 +75,18 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_add || id == R.id.action_add) {
-                mostrarDialogoAgregarAvion();
-                if (navigationView.getCheckedItem().getItemId() != R.id.nav_reservas) {
-                    navigationView.setCheckedItem(R.id.nav_home);
+                // comprobar que fragment es el actual. Si se está en reservas, anadir nueva reserva
+                // en caso contrario, anadir nuevo avion.
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if ((fragment instanceof ReservasFragment)) {
+                    // TODO:
+                    // mostrarDialogoAgregarReserva();
+                }
+                else {
+                    mostrarDialogoAgregarAvion();
+                    if (navigationView.getCheckedItem().getItemId() != R.id.nav_reservas) {
+                        navigationView.setCheckedItem(R.id.nav_home);
+                    }
                 }
             }
             else if (id == R.id.nav_reset) {
@@ -216,20 +225,27 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             return true;
         }
         else if (item.getItemId() == R.id.nav_reset) {
-            reiniciarBD();
-            navigationView.setCheckedItem(R.id.nav_reservas);
-            replaceFragment(new ReservasFragment());
-            pasarGarbageCollector();
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.confirmar_borrado)
+                    .setMessage(R.string.redireccion_reservas)
+                    .setPositiveButton(R.string.si, (dialog, which) -> {
+                        reiniciarBD();
+                        navigationView.setCheckedItem(R.id.nav_reservas);
+                        replaceFragment(new ReservasFragment());
+                        pasarGarbageCollector();
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
         }
         else if (item.getItemId() == R.id.nav_logout) {
             new AlertDialog.Builder(this)
-                    .setTitle("Cerrar sesión")
-                    .setMessage("¿Estás seguro de que quieres cerrar sesión?")
-                    .setPositiveButton("Sí", (dialog, which) -> {
+                    .setTitle(R.string.menu_logout)
+                    .setMessage(R.string.confirmar_logout)
+                    .setPositiveButton(R.string.si, (dialog, which) -> {
                         // aqui se hace el logout real
                         logout();
                     })
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton(R.string.no, null)
                     .show();
         }
         else {
@@ -393,6 +409,67 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         });
         dialog.show();
     }
+
+    /* private void mostrarDialogoAgregarReserva() {
+        System.out.println("MainActivity: mostrarDialogoAgregarReserva");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_agregar_reserva, null);
+        builder.setView(view);
+
+        EditText etNombre = view.findViewById(R.id.etNombre);
+        EditText etClase = view.findViewById(R.id.etClase);
+        EditText etTarifa = view.findViewById(R.id.etTarifa);
+        EditText etPasajeros = view.findViewById(R.id.etPasajeros);
+        EditText etAlcance = view.findViewById(R.id.etAlcance);
+
+        Button btnGuardar = view.findViewById(R.id.btnGuardar);
+        Button btnCancelar = view.findViewById(R.id.btnAgregar);
+
+        AlertDialog dialog = builder.create();
+
+        btnCancelar.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        btnGuardar.setOnClickListener(v -> {
+            String nombre = etNombre.getText().toString().trim();
+            String clase = etClase.getText().toString().trim();
+            String tarifaStr = etTarifa.getText().toString().trim();
+
+            String numPasajeros = etPasajeros.getText().toString().trim();
+            String alcance = etAlcance.getText().toString().trim();
+
+            if (nombre.isEmpty() || clase.isEmpty() || tarifaStr.isEmpty() || numPasajeros.isEmpty() || alcance.isEmpty()) {
+                Toast.makeText(this, getString(R.string.error_campos), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                int tarifa = Integer.parseInt(tarifaStr);
+                int pasajerosReal = Integer.parseInt(numPasajeros);
+                int alcanceReal = Integer.parseInt(alcance);
+
+                if (tarifa < 0) throw new NumberFormatException();
+                if (pasajerosReal < 0) throw new NumberFormatException();
+                if (alcanceReal < 0) throw new NumberFormatException();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (fragmentManager.findFragmentById(R.id.fragment_container).getClass().equals(ReservasFragment.class)) {
+                    navigationView.setCheckedItem(R.id.nav_reservas);
+                    Toast.makeText(this, getString(R.string.dialog_no_implementado), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    navigationView.setCheckedItem(R.id.nav_home);
+                    AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+                    fragment.agregarAvion(nombre, clase, tarifa, pasajerosReal, alcanceReal);
+                }
+                dialog.dismiss();
+            }
+            catch (NumberFormatException e) {
+                Toast.makeText(this, getString(R.string.error_numero_valido), Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialog.show();
+    }
+
     /**
      * Verifica si la app tiene permisos para notificaciones. Si no, lo solicita.
      * Crea un canal de notificación.
