@@ -1,6 +1,8 @@
 package com.example.das_primeraevaluacion;
 
-public class Aeropuerto {
+import java.io.Serializable;
+
+public class Aeropuerto implements Serializable {
 
     private String codigo_icao;
     private String nombre;

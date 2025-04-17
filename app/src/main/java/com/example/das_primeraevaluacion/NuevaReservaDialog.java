@@ -2,6 +2,7 @@ package com.example.das_primeraevaluacion;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.text.Editable;
@@ -119,9 +120,18 @@ public class NuevaReservaDialog extends DialogFragment {
             if (origenSeleccionado != null && destinoSeleccionado != null) {
                 System.out.println(origenSeleccionado.getNombre());
                 System.out.println(destinoSeleccionado.getNombre());
+
                 // Lógica para guardar la reserva, llamar a tu DAO y demás
                 // Ejemplo:
                 // reservaDAO.insertarReserva(new Reserva(...));
+
+                Intent intent = new Intent(getContext(), ReservaMapaActivity.class);
+                // la clase aeropuerto se ha hecho serializable
+                // para poder pasar el aeropuerto al completo al intent.
+                intent.putExtra("origen", origenSeleccionado);
+                intent.putExtra("destino", destinoSeleccionado);
+                startActivity(intent);
+
                 dismiss();
             } else {
                 // Mensaje de error si no se seleccionaron aeropuertos válidos
