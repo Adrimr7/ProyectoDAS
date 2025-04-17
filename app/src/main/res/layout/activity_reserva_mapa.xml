@@ -11,14 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:padding="8dp"
         android:text="@string/btn_guardar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnVolverMapa" />
+        app:layout_constraintTop_toBottomOf="@+id/btnVolverMapa"
+        app:layout_constraintVertical_bias="0.333" />
 
     <TextView
         android:id="@+id/tvMapa"
@@ -28,15 +29,16 @@
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mvMapa" />
+        app:layout_constraintTop_toBottomOf="@+id/mvMapa"
+        app:layout_constraintVertical_bias="0.539" />
 
     <Button
         android:id="@+id/btnVolverMapa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp"
         android:padding="8dp"
         android:text="@string/btn_volver"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,12 +46,12 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvMapa"
-        app:layout_constraintVertical_bias="0.172" />
+        app:layout_constraintVertical_bias="0.107" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mvMapa"
-        android:layout_width="386dp"
-        android:layout_height="402dp"
+        android:layout_width="382dp"
+        android:layout_height="362dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"

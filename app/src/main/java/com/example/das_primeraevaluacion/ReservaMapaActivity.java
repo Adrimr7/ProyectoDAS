@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.das_primeraevaluacion.bd.AvionDAO;
 import com.google.android.gms.location.LocationRequest;
@@ -25,7 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class ReservaMapaActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -37,8 +43,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
     private TextView tvMapa;
     private Aeropuerto origen;
     private Aeropuerto destino;
-    private final double EMISION_POR_KM = 0.115;
-    private double distancia;
+    private double distancia = -1;
     private ArrayList<Avion> listaAviones;
 
     @Override
@@ -76,16 +81,26 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
             // todo: guardar la reserva
         });
 
-        // todo: cargar aviones aqui, habra que volverlos a cargar desde
-        // el php? estaria mejor no hacerlo pero no hay otra alternativa
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewMapa);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+
         AvionDAO avionDAO = new AvionDAO(getBaseContext());
         listaAviones = avionDAO.obtenerTodosLosAviones();
 
+        if (listaAviones.isEmpty()){
+            // cargar aviones desde el php al DAO
+            // todo
+        }
+
         filtrarAviones();
+        // todo: avionAdapter? incluir la lista de los aviones con el checkbox
 
-        // todo: anadir lista de aviones para que el usuario elija (filtrando por distancia)
-
-
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        AvionMapaAdapter adapter = new AvionMapaAdapter(listaAviones, avionSeleccionado -> {
+            // avion seleccionado (solo uno a la vez)
+            System.out.println("Avion seleccionado: " + avionSeleccionado.getNombre());
+        });
+        recyclerView.setAdapter(adapter);
 
 
     }
@@ -156,6 +171,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
         distancia = calcularDistanciaKm(latlngOrigen, latlngDestino);
         tvMapa.setText(distancia + "km");
+        double EMISION_POR_KM = 0.115;
         Toast.makeText(this,
                 "Distancia: " + String.format("%.2f", distancia) + " km\n" +
                         "Huella: " + String.format("%.2f", distancia * EMISION_POR_KM) + " kg CO₂/pax",
@@ -209,5 +225,26 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return 6371 * c;
+    }
+
+    private void filtrarAviones() {
+        // filtrar aviones que cumplan las condiciones
+        if (distancia == -1) {
+            LatLng latlngOrigen = new LatLng(origen.getLat(), origen.getLon());
+            LatLng latlngDestino = new LatLng(destino.getLat(), destino.getLon());
+            distancia = calcularDistanciaKm(latlngOrigen, latlngDestino);
+        }
+        // lambda de java8 para filtrar los aviones que no cubran la distancia y ordenar por precio.
+        // tambien se anade un filtro con tree-set para eliminar duplicados o similares
+        listaAviones = listaAviones.stream()
+                .filter(p -> p.getAlcanceKm() > distancia)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Avion::getNombre))),
+                        lista -> {
+                            return lista.stream()
+                                    .sorted(Comparator.comparingDouble(Avion::getTarifaBase))
+                                    .collect(Collectors.toCollection(ArrayList::new));
+                        }
+                ));
     }
 }

@@ -10,13 +10,24 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="27dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="16dp"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvNombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
+            android:layout_marginStart="44dp"
             android:text="@string/nombre_avion"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -27,33 +38,42 @@
             android:id="@+id/tvClase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
             android:text="@string/clase"
             android:textColor="@android:color/darker_gray"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvTarifa"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="189dp" />
+            app:layout_constraintVertical_bias="0.478" />
 
         <TextView
             android:id="@+id/tvTarifa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="2dp"
             android:text="@string/tarifa_base"
             android:textSize="10sp"
-            tools:layout_editor_absoluteX="252dp"
-            tools:layout_editor_absoluteY="2dp" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tvAlcance"
+            app:layout_constraintTop_toBottomOf="@+id/tvAlcance"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/tvAlcance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:text="@string/alcance_km"
             android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.809"
-            app:layout_constraintStart_toEndOf="@+id/tvTarifa"
-            tools:layout_editor_absoluteY="2dp" />
+            tools:layout_editor_absoluteY="0dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.cardview.widget.CardView>
