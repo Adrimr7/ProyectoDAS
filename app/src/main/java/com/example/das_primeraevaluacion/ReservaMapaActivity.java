@@ -1,5 +1,7 @@
 package com.example.das_primeraevaluacion;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,11 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.das_primeraevaluacion.bd.AvionDAO;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -28,9 +31,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class ReservaMapaActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -79,6 +80,12 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         Button btnConfirmar = findViewById(R.id.btnConfirmarMapa);
         btnConfirmar.setOnClickListener(v -> {
             // todo: guardar la reserva
+            // mandar a anadirReserva.php los datos que hacen falta:
+            // email_pasajero, fecha_reserva, avion_nombre, y ambos ICAO (origen y destino)
+            // el email está en las shared preferences
+            // la fecha se saca dado un timestamp actual
+            // todo: si hay un avion seleccionado, si no no continuar
+
         });
 
         RecyclerView recyclerView = findViewById(R.id.recyclerViewMapa);
@@ -93,7 +100,6 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         }
 
         filtrarAviones();
-        // todo: avionAdapter? incluir la lista de los aviones con el checkbox
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         AvionMapaAdapter adapter = new AvionMapaAdapter(listaAviones, avionSeleccionado -> {
@@ -133,10 +139,10 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
             if (location != null) {
                 System.out.println("Ubicación obtenida: " + location.getLatitude() + ", " + location.getLongitude());
                 mostrarUbicacionEnMapa(location.getLatitude(), location.getLongitude());
-            } else {
+            }
+            else {
                 System.out.println("No se pudo obtener la ubicación");
-                // sacar un toast
-
+                // todo sacar un toast
             }
             }).addOnFailureListener(e -> {
                 System.out.println("Error al obtener la ubicación: " + e.getMessage());
@@ -146,6 +152,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
     private void mostrarUbicacionEnMapa(double lat, double lon) {
         LatLng ubicacionActual = new LatLng(lat, lon);
+        // todo: marker con algo distinto
         mMap.addMarker(new MarkerOptions().position(ubicacionActual).title(getString(R.string.tu_ubicacion)));
     }
 
@@ -154,8 +161,14 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         LatLng latlngOrigen = new LatLng(origen.getLat(), origen.getLon());
         LatLng latlngDestino = new LatLng(destino.getLat(), destino.getLon());
 
-        mMap.addMarker(new MarkerOptions().position(latlngOrigen).title("Origen: " + origen.getNombre()));
-        mMap.addMarker(new MarkerOptions().position(latlngDestino).title("Destino: " + destino.getNombre()));
+        // markers de origen y destino
+        Bitmap bitmapSalida = BitmapFactory.decodeResource(getResources(), R.drawable.aeropuerto_salida);
+        Bitmap bitmapLlegada = BitmapFactory.decodeResource(getResources(), R.drawable.aeropuerto_llegada);
+        BitmapDescriptor iconoOrigen = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapSalida, 80, 80, false));
+        BitmapDescriptor iconoDestino = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapLlegada, 80, 80, false));
+
+        mMap.addMarker(new MarkerOptions().position(latlngOrigen).title("Origen: " + origen.getNombre()).icon(iconoOrigen));
+        mMap.addMarker(new MarkerOptions().position(latlngDestino).title("Destino: " + destino.getNombre()).icon(iconoDestino));
         System.out.println("RMActivity: despuesMarkers" + latlngOrigen + latlngDestino);
 
         mMap.addPolyline(new PolylineOptions()
@@ -211,7 +224,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
     public static double calcularDistanciaKm(LatLng origen, LatLng destino) {
         System.out.println("RMActivity: calcularDistanciaKm");
-        // calcular la distancia con la formula de Haversine
+        // calcular la distancia con la formula de Haversine entre dos puntos
 
         double latOrigenRad = Math.toRadians(origen.latitude);
         double latDestinoRad = Math.toRadians(destino.latitude);
@@ -224,11 +237,11 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
+        // radio de la tierra
         return 6371 * c;
     }
 
     private void filtrarAviones() {
-        // filtrar aviones que cumplan las condiciones
         if (distancia == -1) {
             LatLng latlngOrigen = new LatLng(origen.getLat(), origen.getLon());
             LatLng latlngDestino = new LatLng(destino.getLat(), destino.getLon());
