@@ -10,7 +10,9 @@ public class Reserva {
     private Aeropuerto aeroOrigen;
     private Aeropuerto aeroDestino;
 
-    // Constructora. Se usaran las reservas mas adelante.
+    public Reserva() {} // constructora vacia para el gson
+
+    // constructora, se usaran las reservas mas adelante.
     public Reserva(int id, String emailPasajero, String avionNombre, String fechaReserva, Aeropuerto aeroDestino, Aeropuerto aeroOrigen) {
         this.id = id;
         this.emailPasajero = emailPasajero;
@@ -51,5 +53,13 @@ public class Reserva {
 
     public void setAvionNombre(String avionNombre) {
         this.avionNombre = avionNombre;
+    }
+
+    public Aeropuerto getOrigen(){
+        return this.aeroOrigen;
+    }
+
+    public Aeropuerto getDestino(){
+        return this.aeroDestino;
     }
 }

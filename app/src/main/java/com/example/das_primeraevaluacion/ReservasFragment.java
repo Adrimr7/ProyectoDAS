@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +20,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ReservasFragment extends Fragment {
 
@@ -55,14 +73,26 @@ public class ReservasFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewReservas);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(() -> {
+            try {
+                System.out.println("Dentro del hilo, antes de llamar a agregarReservasDesdeRemoto");
+                agregarReservasDesdeRemoto();
+                System.out.println("Reservas cargadas: " + listaReservas.size());
+
+                handler.post(() -> {
+                    System.out.println("Estamos en el hilo principal ahora");
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         listaReservas = cargarReservas();
-
-        System.out.println("RFragment: Lista de reservas antes de verificar si está vacía: " + listaReservas.size());
-
-        if (listaReservas.isEmpty()) {
-            agregarReservasPorDefecto();
-            listaReservas = cargarReservas();
-        }
 
         System.out.println("RFragment: Lista de reservas después de agregar por defecto: " + listaReservas.size());
 
@@ -98,6 +128,90 @@ public class ReservasFragment extends Fragment {
         editor.apply();
     }
 
+    private void agregarReservasDesdeRemoto() {
+        System.out.println("RFragment: agregarReservasDesdeRemoto. Inicio");
+        ArrayList<Reserva> listaReservas = new ArrayList<>();
+        HttpURLConnection conn = null;
+        BufferedReader reader = null;
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+
+        try {
+            System.out.println("RFragment: agregarReservasDesdeRemoto. Inicio del try");
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/reservas/cargarReservas.php");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(2000);
+            conn.setReadTimeout(2000);
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                StringBuilder result = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+                // Parseo del JSON
+                JSONObject jsonObject = new JSONObject(result.toString());
+                JSONArray reservasArray = jsonObject.getJSONArray("reservas");
+
+                for (int i = 0; i < reservasArray.length(); i++) {
+                    JSONObject resObj = reservasArray.getJSONObject(i);
+
+                    String email = resObj.getString("email_pasajero");
+                    String avion = resObj.getString("avion_nombre");
+                    String fecha = resObj.getString("fecha_reserva");
+
+                    Aeropuerto aeroOrigen = new Aeropuerto(
+                            resObj.getString("origen_nombre"),
+                            resObj.getString("origen_icao"),
+                            resObj.getDouble("origen_lat"),
+                            resObj.getDouble("origen_lon"),
+                            resObj.getString("origen_pais_iso"),
+                            resObj.getString("origen_pais_ingles"),
+                            resObj.getString("origen_pais_castellano")
+                    );
+
+                    Aeropuerto aeroDestino = new Aeropuerto(
+                            resObj.getString("destino_nombre"),
+                            resObj.getString("destino_icao"),
+                            resObj.getDouble("destino_lat"),
+                            resObj.getDouble("destino_lon"),
+                            resObj.getString("destino_pais_iso"),
+                            resObj.getString("destino_pais_ingles"),
+                            resObj.getString("destino_pais_castellano")
+                    );
+
+                    Reserva reserva = new Reserva(i + 1,email,avion,fecha,aeroOrigen,aeroDestino);
+                    listaReservas.add(reserva);
+                }
+                String jsonReservas = gson.toJson(listaReservas);
+                editor.putString("lista_reservas", jsonReservas);
+                editor.apply();
+            }
+            else {
+                System.out.println("HTTP_ERROR. Respuesta del servidor: " + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
     private ArrayList<Reserva> cargarReservas() {
         Gson gson = new Gson();
         String json = prefs.getString("lista_reservas", "[]");
@@ -113,6 +227,21 @@ public class ReservasFragment extends Fragment {
             e.printStackTrace();
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public void onResume() {
+        System.out.println("RFragment: onResume");
+        super.onResume();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                agregarReservasDesdeRemoto();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        listaReservas = cargarReservas();
     }
 
     public void eliminarReserva(int position) {

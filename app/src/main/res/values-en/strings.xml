@@ -55,4 +55,12 @@
     <string name="redireccion_reservas">You will be redirected to the bookings tab.</string>
     <string name="email_pasajero">Passenger mail</string>
     <string name="tu_ubicacion">Your location</string>
+    <string name="error_aeropuertos">Error selecting the airports.</string>
+    <string name="aero_origen">Departure Airport</string>
+    <string name="aero_destino">Arrival Airport</string>
+    <string name="pista_aero_origen">Search departure airport...</string>
+    <string name="pista_aero_destino">Search arrival airport...</string>
+    <string name="confirmar_reserva">Confirm Booking</string>
+    <string name="btn_reserva">Add new Booking</string>
+    <string name="menu_perfil">User Profile</string>
 </resources>

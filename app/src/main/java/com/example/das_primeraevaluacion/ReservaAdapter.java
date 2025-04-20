@@ -33,9 +33,16 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaV
     public void onBindViewHolder(ReservaViewHolder holder, int position) {
         Reserva reserva = listaReservas.get(position);
 
+        System.out.println(reserva.getDestino().getCodigo_icao());
+        System.out.println(reserva.getDestino().getNombre());
+        System.out.println(reserva.getOrigen().getCodigo_icao());
+        System.out.println(reserva.getOrigen().getNombre());
+
         holder.tvEmailPasajero.setText(reserva.getEmailPasajero());
         holder.tvFechaReserva.setText(reserva.getFechaReserva());
         holder.tvAvionNombre.setText(reserva.getAvionNombre());
+        holder.tvAeroOrigen.setText(reserva.getOrigen().getCodigo_icao());
+        holder.tvAeroDestino.setText(reserva.getDestino().getCodigo_icao());
     }
 
     @Override
@@ -47,13 +54,15 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaV
     }
 
     public static class ReservaViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvEmailPasajero, tvFechaReserva, tvAvionNombre;
+        public TextView tvEmailPasajero, tvFechaReserva, tvAvionNombre, tvAeroOrigen, tvAeroDestino;
 
         public ReservaViewHolder(View itemView) {
             super(itemView);
             tvEmailPasajero = itemView.findViewById(R.id.tvEmailPasajero);
             tvFechaReserva = itemView.findViewById(R.id.tvFechaReserva);
             tvAvionNombre = itemView.findViewById(R.id.tvAvionNombre);
+            tvAeroOrigen = itemView.findViewById(R.id.tvAeroOrigen);
+            tvAeroDestino = itemView.findViewById(R.id.tvAeroDestino);
         }
     }
 }

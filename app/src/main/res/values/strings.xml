@@ -5,10 +5,10 @@
     <string name="menu_reset">Reiniciar BD</string>
     <string name="dialog_add_airplane">Agregar avion</string>
     <string name="dialog_reset_db">Base de Datos reiniciada</string>
-    <string name="dialog_no_implementado">Este método no está implementado en las reservas</string>
+    <string name="dialog_no_implementado">Este método no está implementado en las reservas, borrarías las reservas de otros usuarios.</string>
     <string name="cambiar_idioma">Cambiar idioma</string>
     <string name="error_campos">Todos los campos son obligatorios</string>
-    <string name="error_numero_valido">Introduce un número válido!</string>
+    <string name="error_numero_valido">¡Introduce un número válido!</string>
     <string name="notif_aviones">Notificaciones sobre nuevos aviones</string>
     <string name="avion_agregado1">Nuevo Avión Agregado</string>
     <string name="avion_agregado2">Se ha agregado: </string>
@@ -55,4 +55,14 @@
     <string name="redireccion_reservas">Se te redigirá a la pestaña de reservas.</string>
     <string name="email_pasajero">Email del pasajero</string>
     <string name="tu_ubicacion">Tu ubicación</string>
+    <string name="error_aeropuertos">Error al seleccionar los aeropuertos</string>
+    <string name="aero_origen">Aeropuerto de Origen</string>
+    <string name="aero_destino">Aeropuerto de Destino</string>
+    <string name="pista_aero_origen">Buscar aeropuerto de origen...</string>
+    <string name="pista_aero_destino">Buscar aeropuerto de destino...</string>
+    <string name="confirmar_reserva">Confirmar Reserva</string>
+    <string name="btn_reserva">Añadir Reserva</string>
+    <string name="menu_perfil">Mi perfil</string>
+
+
 </resources>

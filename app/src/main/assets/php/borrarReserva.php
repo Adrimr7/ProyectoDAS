@@ -15,29 +15,21 @@ if ($conn->connect_error) {
 
 $emailUsuario = $_POST['emailUsuario'];
 $fechaIso = $_POST["fechaReserva"];
-$avionNombre = $_POST['avionNombre'];
-$icaoOrigen = $_POST['icaoOrigen'];
-$icaoDestino = $_POST['icaoDestino'];
 
 // convertir fecha de ISO a la correcta en mysql
 $dt = new DateTime($fechaIso);
 $fechaMysql = $dt->format('Y-m-d H:i:s');
 
-$sql = "INSERT INTO reservas (
-    email_pasajero, fecha_reserva, avion_nombre,
-    origen_icao, destino_icao) VALUES (?, ?, ?, ?, ?)";
+$sql = "DELETE FROM reservas WHERE email_pasajero=? AND fecha_reserva=?";
 
 $stmt = $conn->prepare($sql);
 if ($stmt) {
-    $stmt->bind_param(
-        "sssss",
-        $emailUsuario, $fechaMysql, $avionNombre, $icaoOrigen, $icaoDestino
-    );
+    $stmt->bind_param("ss", $emailUsuario, $fechaMysql);
 
     if ($stmt->execute()) {
-        echo "Reserva de '$avionNombre' anadida correctamente.";
+        echo "Reserva de '$emailUsuario' borrada correctamente.";
     } else {
-        echo "Error al insertar: " . $stmt->error;
+        echo "Error al borrar: " . $stmt->error;
     }
     $stmt->close();
 } else {

@@ -1,5 +1,6 @@
 package com.example.das_primeraevaluacion;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -29,13 +30,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.time.Instant;
 
 public class ReservaMapaActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private static final double EMISION_POR_KM = 0.115;
     private MapView mapView;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
@@ -46,6 +53,8 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
     private Aeropuerto destino;
     private double distancia = -1;
     private ArrayList<Avion> listaAviones;
+    private Avion avionSelecc;
+    private LatLng ubicacionActual;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +77,9 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         mapView.getMapAsync(this);
 
         tvMapa = findViewById(R.id.tvMapa);
-
-        tvMapa.setText(distancia + "km");
+        if (distancia != -1){
+            tvMapa.setText((int) distancia + " km -> " + distancia * EMISION_POR_KM + " kg CO₂/pax");
+        }
 
         Button btnVolver = findViewById(R.id.btnVolverMapa);
         btnVolver.setOnClickListener(v -> {
@@ -78,15 +88,8 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         });
 
         Button btnConfirmar = findViewById(R.id.btnConfirmarMapa);
-        btnConfirmar.setOnClickListener(v -> {
-            // todo: guardar la reserva
-            // mandar a anadirReserva.php los datos que hacen falta:
-            // email_pasajero, fecha_reserva, avion_nombre, y ambos ICAO (origen y destino)
-            // el email está en las shared preferences
-            // la fecha se saca dado un timestamp actual
-            // todo: si hay un avion seleccionado, si no no continuar
-
-        });
+        // todo: comentar funcion anadirReservasSiAvionSelecc
+        btnConfirmar.setOnClickListener(v -> anadirReservaSiAvionSelecc());
 
         RecyclerView recyclerView = findViewById(R.id.recyclerViewMapa);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
@@ -94,7 +97,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         AvionDAO avionDAO = new AvionDAO(getBaseContext());
         listaAviones = avionDAO.obtenerTodosLosAviones();
 
-        if (listaAviones.isEmpty()){
+        if (listaAviones.isEmpty()) {
             // cargar aviones desde el php al DAO
             // todo
         }
@@ -104,11 +107,56 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         AvionMapaAdapter adapter = new AvionMapaAdapter(listaAviones, avionSeleccionado -> {
             // avion seleccionado (solo uno a la vez)
+            avionSelecc = avionSeleccionado;
             System.out.println("Avion seleccionado: " + avionSeleccionado.getNombre());
         });
         recyclerView.setAdapter(adapter);
 
+    }
 
+    private void anadirReservaSiAvionSelecc() {
+        if (avionSelecc != null) {
+            SharedPreferences prefs = getSharedPreferences("Perfil", MODE_PRIVATE);
+            String emailUsuario = prefs.getString("email", null);
+            String fechaReserva = Instant.now().toString();
+            String avionNombre = avionSelecc.getNombre();
+            String icaoOrigen = origen.getCodigo_icao();
+            String icaoDestino = destino.getCodigo_icao();
+
+            new Thread(() -> {
+                try {
+                    URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/reservas/anadirReserva.php");
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+                    conn.setConnectTimeout(2000);
+                    conn.setReadTimeout(2000);
+
+                    String postData = "emailUsuario=" + URLEncoder.encode(emailUsuario, "UTF-8") +
+                            "&fechaReserva=" + URLEncoder.encode(fechaReserva, "UTF-8") +
+                            "&avionNombre=" + URLEncoder.encode(avionNombre, "UTF-8") +
+                            "&icaoOrigen=" + URLEncoder.encode(icaoOrigen, "UTF-8") +
+                            "&icaoDestino=" + URLEncoder.encode(icaoDestino, "UTF-8");
+                    System.out.println("Agregando reserva: " + postData);
+                    conn.getOutputStream().write(postData.getBytes("UTF-8"));
+
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        System.out.println("Reserva añadida correctamente a la BD remota.");
+                    } else {
+                        System.out.println("Error al añadir reserva a la BD remota: " + responseCode);
+                    }
+
+                    conn.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            Toast.makeText(getBaseContext(), "reserva anadida.", Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     @Override
@@ -151,9 +199,17 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void mostrarUbicacionEnMapa(double lat, double lon) {
-        LatLng ubicacionActual = new LatLng(lat, lon);
+        ubicacionActual = new LatLng(lat, lon);
         // todo: marker con algo distinto
         mMap.addMarker(new MarkerOptions().position(ubicacionActual).title(getString(R.string.tu_ubicacion)));
+
+        // linea desde ubicacion actual a sitio.
+        LatLng latlngOrigen = new LatLng(origen.getLat(), origen.getLon());
+        mMap.addPolyline(new PolylineOptions()
+                .add(ubicacionActual, latlngOrigen)
+                .width(5)
+                .color(Color.RED)
+        );
     }
 
     private void mostrarOrigenYDestino() {
@@ -167,6 +223,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         BitmapDescriptor iconoOrigen = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapSalida, 80, 80, false));
         BitmapDescriptor iconoDestino = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapLlegada, 80, 80, false));
 
+        // todo: CAMBIAR ORIGEN, DESTINO A INGLES/CASTELLANO
         mMap.addMarker(new MarkerOptions().position(latlngOrigen).title("Origen: " + origen.getNombre()).icon(iconoOrigen));
         mMap.addMarker(new MarkerOptions().position(latlngDestino).title("Destino: " + destino.getNombre()).icon(iconoDestino));
         System.out.println("RMActivity: despuesMarkers" + latlngOrigen + latlngDestino);
@@ -174,7 +231,8 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         mMap.addPolyline(new PolylineOptions()
                 .add(latlngOrigen, latlngDestino)
                 .width(5)
-                .color(Color.BLUE));
+                .color(Color.BLUE)
+        );
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         builder.include(latlngOrigen);
@@ -184,7 +242,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
         distancia = calcularDistanciaKm(latlngOrigen, latlngDestino);
         tvMapa.setText(distancia + "km");
-        double EMISION_POR_KM = 0.115;
+
         Toast.makeText(this,
                 "Distancia: " + String.format("%.2f", distancia) + " km\n" +
                         "Huella: " + String.format("%.2f", distancia * EMISION_POR_KM) + " kg CO₂/pax",
@@ -253,11 +311,9 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                 .filter(p -> p.getAlcanceKm() > distancia)
                 .collect(Collectors.collectingAndThen(
                         Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Avion::getNombre))),
-                        lista -> {
-                            return lista.stream()
-                                    .sorted(Comparator.comparingDouble(Avion::getTarifaBase))
-                                    .collect(Collectors.toCollection(ArrayList::new));
-                        }
+                        lista -> lista.stream()
+                                .sorted(Comparator.comparingDouble(Avion::getTarifaBase))
+                                .collect(Collectors.toCollection(ArrayList::new))
                 ));
     }
 }

@@ -32,6 +32,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
@@ -169,24 +171,27 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             editor.apply();
             if (findViewById(R.id.tvTitulo)== null && findViewById(R.id.tvTituloPerfil)== null) {
                 // fragmento de reservas
-                TextView viewById3 = findViewById(R.id.tvTituloReservas);
-                viewById3.setText(R.string.mis_reservas);
-                TextView viewById4 = findViewById(R.id.tvSiguiente);
-                viewById4.setText(R.string.texto_siguiente);
+                TextView tvTituloReservas = findViewById(R.id.tvTituloReservas);
+                tvTituloReservas.setText(R.string.mis_reservas);
+                TextView tvSiguiente = findViewById(R.id.tvSiguiente);
+                tvSiguiente.setText(R.string.texto_siguiente);
+                Button btnAnadirReserva = findViewById(R.id.btnAnadirReserva);
+                btnAnadirReserva.setText(R.string.btn_reserva);
             }
             else if (findViewById(R.id.tvTituloPerfil)!=null) {
                 // fragmento de perfil
-                TextView viewById = findViewById(R.id.tvTituloPerfil);
-                viewById.setText(R.string.perfil_usuario);
+                TextView tvTituloPerfil = findViewById(R.id.tvTituloPerfil);
+                tvTituloPerfil.setText(R.string.perfil_usuario);
             }
             else {
                 // otros fragmentos
-                TextView viewById = findViewById(R.id.tvTitulo);
-                viewById.setText(R.string.app_name);
-            }
-            Toolbar viewById2 = findViewById(R.id.toolbar);
-            viewById2.setTitle(R.string.app_name);
+                TextView tvTitulo = findViewById(R.id.tvTitulo);
+                tvTitulo.setText(R.string.app_name);
 
+            }
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            toolbar.setTitle(R.string.app_name);
+            actualizarIdiomaMenu();
             invalidateOptionsMenu();
         }
     }
@@ -280,6 +285,9 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
 
         MenuItem agregarItem = menu.findItem(R.id.nav_add);
         agregarItem.setTitle(R.string.menu_add);
+
+        MenuItem usuarioItem = menu.findItem(R.id.nav_perfil);
+        usuarioItem.setTitle(R.string.menu_perfil);
     }
     /**
      * @param item Elemento seleccionado en la navegacion.
@@ -410,66 +418,6 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         dialog.show();
     }
 
-    /* private void mostrarDialogoAgregarReserva() {
-        System.out.println("MainActivity: mostrarDialogoAgregarReserva");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = getLayoutInflater().inflate(R.layout.dialog_agregar_reserva, null);
-        builder.setView(view);
-
-        EditText etNombre = view.findViewById(R.id.etNombre);
-        EditText etClase = view.findViewById(R.id.etClase);
-        EditText etTarifa = view.findViewById(R.id.etTarifa);
-        EditText etPasajeros = view.findViewById(R.id.etPasajeros);
-        EditText etAlcance = view.findViewById(R.id.etAlcance);
-
-        Button btnGuardar = view.findViewById(R.id.btnGuardar);
-        Button btnCancelar = view.findViewById(R.id.btnAgregar);
-
-        AlertDialog dialog = builder.create();
-
-        btnCancelar.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
-
-        btnGuardar.setOnClickListener(v -> {
-            String nombre = etNombre.getText().toString().trim();
-            String clase = etClase.getText().toString().trim();
-            String tarifaStr = etTarifa.getText().toString().trim();
-
-            String numPasajeros = etPasajeros.getText().toString().trim();
-            String alcance = etAlcance.getText().toString().trim();
-
-            if (nombre.isEmpty() || clase.isEmpty() || tarifaStr.isEmpty() || numPasajeros.isEmpty() || alcance.isEmpty()) {
-                Toast.makeText(this, getString(R.string.error_campos), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            try {
-                int tarifa = Integer.parseInt(tarifaStr);
-                int pasajerosReal = Integer.parseInt(numPasajeros);
-                int alcanceReal = Integer.parseInt(alcance);
-
-                if (tarifa < 0) throw new NumberFormatException();
-                if (pasajerosReal < 0) throw new NumberFormatException();
-                if (alcanceReal < 0) throw new NumberFormatException();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                if (fragmentManager.findFragmentById(R.id.fragment_container).getClass().equals(ReservasFragment.class)) {
-                    navigationView.setCheckedItem(R.id.nav_reservas);
-                    Toast.makeText(this, getString(R.string.dialog_no_implementado), Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    navigationView.setCheckedItem(R.id.nav_home);
-                    AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
-                    fragment.agregarAvion(nombre, clase, tarifa, pasajerosReal, alcanceReal);
-                }
-                dialog.dismiss();
-            }
-            catch (NumberFormatException e) {
-                Toast.makeText(this, getString(R.string.error_numero_valido), Toast.LENGTH_SHORT).show();
-            }
-        });
-        dialog.show();
-    }
-
     /**
      * Verifica si la app tiene permisos para notificaciones. Si no, lo solicita.
      * Crea un canal de notificación.
@@ -536,6 +484,7 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         System.out.println("MainActivity: onResume");
         super.onResume();
         pasarGarbageCollector();
+        navigationView.setCheckedItem(R.id.nav_home);
         cambiarFragement(new AvionesFragment());
     }
     /**

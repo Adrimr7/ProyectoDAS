@@ -12,6 +12,8 @@ public class Aeropuerto implements Serializable {
     private String pais_ingles;
     private String pais_castellano;
 
+    public Aeropuerto() {} // constructora vacia para el Gson
+
     public Aeropuerto(String nombre, String codigo_icao, double lat, double lon, String pais_castellano, String pais_ingles, String pais_iso) {
         this.nombre = nombre;
         this.codigo_icao = codigo_icao;

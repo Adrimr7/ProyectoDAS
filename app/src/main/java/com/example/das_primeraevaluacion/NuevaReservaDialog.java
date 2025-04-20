@@ -13,6 +13,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -117,7 +119,7 @@ public class NuevaReservaDialog extends DialogFragment {
             Aeropuerto origenSeleccionado = aeropuertoAdapterOrigen.getAeropuertoSeleccionado();
             Aeropuerto destinoSeleccionado = aeropuertoAdapterDestino.getAeropuertoSeleccionado();
 
-            if (origenSeleccionado != null && destinoSeleccionado != null) {
+            if (origenSeleccionado != null && destinoSeleccionado != null && origenSeleccionado != destinoSeleccionado) {
                 System.out.println(origenSeleccionado.getNombre());
                 System.out.println(destinoSeleccionado.getNombre());
 
@@ -133,8 +135,9 @@ public class NuevaReservaDialog extends DialogFragment {
                 startActivity(intent);
 
                 dismiss();
-            } else {
-                // Mensaje de error si no se seleccionaron aeropuertos válidos
+            }
+            else {
+                Toast.makeText(getContext(), R.string.error_aeropuertos, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -182,10 +185,6 @@ public class NuevaReservaDialog extends DialogFragment {
 
                     listaAeropuertos.add(aeropuerto);
                 }
-
-                getActivity().runOnUiThread(() -> {
-                    // actualizar IU
-                });
 
             } catch (Exception e) {
                 e.printStackTrace();
