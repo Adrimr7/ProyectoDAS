@@ -1,5 +1,6 @@
 package com.example.das_primeraevaluacion;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class AvionMapaAdapter extends RecyclerView.Adapter<AvionMapaAdapter.AvionViewHolder> {
 
@@ -39,10 +39,12 @@ public class AvionMapaAdapter extends RecyclerView.Adapter<AvionMapaAdapter.Avio
     public void onBindViewHolder(@NonNull AvionViewHolder holder, int position) {
         Avion avion = listaAviones.get(position);
 
+        Context context = holder.itemView.getContext();
         holder.tvNombre.setText(avion.getNombre());
-        holder.tvClase.setText(R.string.num_pax + avion.getNumPasajeros());
-        holder.tvTarifa.setText(R.string.tarifa + avion.getTarifaBase() + "€");
-        holder.tvAlcance.setText(R.string.alcance_con_dospuntos + avion.getAlcanceKm() + "km");
+        holder.tvClase.setText(context.getString(R.string.num_pax) + ": " + avion.getNumPasajeros());
+        holder.tvTarifa.setText(context.getString(R.string.tarifa) + ": " + avion.getTarifaBase() + "€");
+        holder.tvAlcance.setText(context.getString(R.string.alcance_con_dospuntos) + ": " + avion.getAlcanceKm() + "km");
+
 
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(position == selectedPosition);

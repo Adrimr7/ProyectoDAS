@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 boolean ok = json.getBoolean("success");
 
                 runOnUiThread(() -> {
-                    Toast.makeText(LoginActivity.this, R.string.error_login, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.login_correcto, Toast.LENGTH_SHORT).show();
 
                     if (ok) {
                         // guardar en sharedpreferences el email

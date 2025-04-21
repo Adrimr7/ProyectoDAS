@@ -1,5 +1,6 @@
 package com.example.das_primeraevaluacion;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -96,11 +98,6 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         AvionDAO avionDAO = new AvionDAO(getBaseContext());
         listaAviones = avionDAO.obtenerTodosLosAviones();
 
-        if (listaAviones.isEmpty()) {
-            // cargar aviones desde el php al DAO
-            // todo
-        }
-
         filtrarAviones();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -143,6 +140,8 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                     int responseCode = conn.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         System.out.println("Reserva añadida correctamente a la BD remota.");
+                        // llamar al widget
+                        //sendBroadcast(new Intent("widgetUltimaReserva"));
                     } else {
                         System.out.println("Error al añadir reserva a la BD remota: " + responseCode);
                     }
@@ -191,9 +190,9 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                 System.out.println("No se pudo obtener la ubicación");
                 // todo sacar un toast
             }
-            }).addOnFailureListener(e -> {
-                System.out.println("Error al obtener la ubicación: " + e.getMessage());
-            });
+        }).addOnFailureListener(e -> {
+            System.out.println("Error al obtener la ubicación: " + e.getMessage());
+        });
         mostrarOrigenYDestino();
     }
 
@@ -238,16 +237,11 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100));
 
         distancia = calcularDistanciaKm(latlngOrigen, latlngDestino);
-
-        if (ubicacionActual != null) {
-            Double distanciaAOrigen = calcularDistanciaKm(ubicacionActual, latlngOrigen);
-            tvMapa.setText(R.string.distancia_hasta + String.format("%.2f", distanciaAOrigen) + "km");
-        }
-        tvMapa.setText(R.string.distancia + String.format("%.2f", distancia) + "km");
+        tvMapa.setText(distancia + "km");
 
         Toast.makeText(this,
-                R.string.distancia_hasta + ": " + String.format("%.2f", distancia) + " km\n" +
-                        R.string.huella +  ": " + String.format("%.2f", distancia * EMISION_POR_KM) + " kg CO₂/pax",
+                "Distancia: " + String.format("%.2f", distancia) + " km\n" +
+                        "Huella: " + String.format("%.2f", distancia * EMISION_POR_KM) + " kg CO₂/pax",
                 Toast.LENGTH_LONG).show();
 
     }

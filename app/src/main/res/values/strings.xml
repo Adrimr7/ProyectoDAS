@@ -78,15 +78,18 @@
     <string name="reserva_anadida">Reserva añadida correctamente.</string>
     <string name="no_encontrado">No encontrado. Recarga la app.</string>
     <string name="error_imagen">Error al cargar la imagen.</string>
-    <string name="num_pax">Num. pax: </string>
-    <string name="tarifa">Tarifa: </string>
-    <string name="alcance_con_dospuntos">Alcance: </string>
+    <string name="num_pax">Num. pax</string>
+    <string name="tarifa">Tarifa</string>
+    <string name="alcance_con_dospuntos">Alcance</string>
     <string name="campos_obligatorios">Todos los campos son obligatorios.</string>
     <string name="error_act_avion">Error al actualizar el avión.</string>
     <string name="avion_actualizado">Avión actualizado.</string>
     <string name="campo_obligatorio">Este campo es obligatorio.</string>
     <string name="error_login">Error al iniciar sesión.</string>
+    <string name="login_correcto">Inicio de sesión correcto.</string>
     <string name="error_registro">Error al registrarse.</string>
     <string name="error_conexion">Error de conexión.</string>
     <string name="completa_campos">Por favor, completa todos los campos.</string>
+    <string name="ultima_reserva">Última reserva:</string>
+    <string name="cargando">Cargando...</string>
 </resources>

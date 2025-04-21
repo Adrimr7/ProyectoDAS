@@ -8,11 +8,8 @@ import android.text.TextWatcher;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
@@ -112,9 +109,8 @@ public class NuevaReservaDialog extends DialogFragment {
             filtrarAeropuertos("", paisSeleccionado, listaAeropuertosDestino, aeropuertoAdapterDestino);
         });
         */
-        // Botón Confirmar Reserva
+
         btnConfirmarReserva.setOnClickListener(v -> {
-            // Aquí puedes recoger los aeropuertos seleccionados
 
             Aeropuerto origenSeleccionado = aeropuertoAdapterOrigen.getAeropuertoSeleccionado();
             Aeropuerto destinoSeleccionado = aeropuertoAdapterDestino.getAeropuertoSeleccionado();
@@ -122,10 +118,6 @@ public class NuevaReservaDialog extends DialogFragment {
             if (origenSeleccionado != null && destinoSeleccionado != null && origenSeleccionado != destinoSeleccionado) {
                 System.out.println(origenSeleccionado.getNombre());
                 System.out.println(destinoSeleccionado.getNombre());
-
-                // Lógica para guardar la reserva, llamar a tu DAO y demás
-                // Ejemplo:
-                // reservaDAO.insertarReserva(new Reserva(...));
 
                 Intent intent = new Intent(getContext(), ReservaMapaActivity.class);
                 // la clase aeropuerto se ha hecho serializable

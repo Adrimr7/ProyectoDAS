@@ -33,11 +33,6 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ReservaV
     public void onBindViewHolder(ReservaViewHolder holder, int position) {
         Reserva reserva = listaReservas.get(position);
 
-        System.out.println(reserva.getDestino().getCodigo_icao());
-        System.out.println(reserva.getDestino().getNombre());
-        System.out.println(reserva.getOrigen().getCodigo_icao());
-        System.out.println(reserva.getOrigen().getNombre());
-
         holder.tvEmailPasajero.setText(reserva.getEmailPasajero());
         holder.tvFechaReserva.setText(reserva.getFechaReserva());
         holder.tvAvionNombre.setText(reserva.getAvionNombre());
