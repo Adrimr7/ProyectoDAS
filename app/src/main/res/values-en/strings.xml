@@ -86,6 +86,7 @@
     <string name="avion_actualizado">Plane successfully updated.</string>
     <string name="campo_obligatorio">This field is needed.</string>
     <string name="error_login">Login error.</string>
+    <string name="login_correcto">Correct login.</string>
     <string name="error_registro">Register error.</string>
     <string name="error_conexion">Connection error.</string>
     <string name="completa_campos">Please, fill all the fields.</string>

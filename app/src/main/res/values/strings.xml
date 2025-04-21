@@ -86,6 +86,7 @@
     <string name="avion_actualizado">Avión actualizado.</string>
     <string name="campo_obligatorio">Este campo es obligatorio.</string>
     <string name="error_login">Error al iniciar sesión.</string>
+    <string name="login_correcto">Inicio de sesión correcto.</string>
     <string name="error_registro">Error al registrarse.</string>
     <string name="error_conexion">Error de conexión.</string>
     <string name="completa_campos">Por favor, completa todos los campos.</string>

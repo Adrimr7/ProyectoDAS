@@ -46,6 +46,17 @@
             android:exported="true"/>
         <meta-data android:name="android.graphics.use_vulkan"
             android:value="false"/>
+        <receiver android:name=".ReservaWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/reserva_widget_info"/>
+        </receiver>
     </application>
+
+
 
 </manifest>

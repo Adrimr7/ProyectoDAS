@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion.reserva;
+package com.example.das_primeraevaluacion;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -15,10 +15,6 @@ import android.widget.Toast;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.das_primeraevaluacion.Aeropuerto;
-import com.example.das_primeraevaluacion.AeropuertoAdapter;
-import com.example.das_primeraevaluacion.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

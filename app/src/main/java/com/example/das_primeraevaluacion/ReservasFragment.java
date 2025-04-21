@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion.reserva;
+package com.example.das_primeraevaluacion;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.example.das_primeraevaluacion.Aeropuerto;
-import com.example.das_primeraevaluacion.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
