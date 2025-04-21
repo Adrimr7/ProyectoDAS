@@ -186,6 +186,8 @@ public class NuevaReservaDialog extends DialogFragment {
         return listaAeropuertos;
     }
 
+    /*
+    Comentado porque no se ha usado finalmente
     private List<String> obtenerPaises() {
         System.out.println("NRDialog: obtenerPaises");
         List<String> paises = new ArrayList<>();
@@ -199,6 +201,8 @@ public class NuevaReservaDialog extends DialogFragment {
         }
         return paises;
     }
+
+     */
 
     private void filtrarAeropuertos(String textoBusqueda, String paisSeleccionado, List<Aeropuerto> listaAeropuertos, AeropuertoAdapter adapter) {
         List<Aeropuerto> listaFiltrada = new ArrayList<>();

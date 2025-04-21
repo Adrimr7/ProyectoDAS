@@ -1,7 +1,10 @@
 package com.example.das_primeraevaluacion;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -65,13 +68,13 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Ajustes de idioma
+        // idioma
         SharedPreferences prefs = getSharedPreferences("Settings", MODE_PRIVATE);
         String language = prefs.getString("My_Lang", "es");
         setIdioma(language);
         actualizarIdiomaMenu();
 
-        // Manejo de menu
+        // menu
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_add || id == R.id.action_add) {
@@ -79,8 +82,6 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
                 // en caso contrario, anadir nuevo avion.
                 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 if ((fragment instanceof ReservasFragment)) {
-                    // TODO:
-                    // mostrarDialogoAgregarReserva();
                 }
                 else {
                     mostrarDialogoAgregarAvion();
@@ -118,11 +119,22 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
             return true;
         });
 
-        // Carga inicial del fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AvionesFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_home);
         }
+
+        // configurado para actualizarse cada 20 minutos
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, ReservaWidget.class);
+        intent.setAction(ReservaWidget.ACTION_ACTUALIZAR_WIDGET);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis(),
+                1000 * 60 * 20,
+                pendingIntent
+        );
     }
     /**
      * Boton de back. Si no está en Home --> Home.
