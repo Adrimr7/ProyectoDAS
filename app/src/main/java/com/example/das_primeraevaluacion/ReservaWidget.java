@@ -1,5 +1,6 @@
 package com.example.das_primeraevaluacion;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -23,6 +24,7 @@ public class ReservaWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        System.out.println("RWidget: onUpdate");
         for (int widgetId : appWidgetIds) {
             actualizarWidget(context, appWidgetManager, widgetId);
         }
@@ -31,6 +33,7 @@ public class ReservaWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        System.out.println("RWidget: onRecieve");
         super.onReceive(context, intent);
 
         if (ACTION_ACTUALIZAR_WIDGET.equals(intent.getAction())) {
@@ -45,12 +48,29 @@ public class ReservaWidget extends AppWidgetProvider {
     }
 
     public static void actualizarWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_reserva);
+        System.out.println("RWidget: actualizarWidget");
+        RemoteViews vistas = new RemoteViews(context.getPackageName(), R.layout.widget_reserva);
 
-        // Llamada HTTP sencilla
+        Intent intent = new Intent(context, ReservaWidget.class);
+        intent.setAction(ACTION_ACTUALIZAR_WIDGET);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        vistas.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
+
+        vistas.setTextViewText(R.id.tvContenidoReserva, "Actualizando...");
+
+        appWidgetManager.updateAppWidget(appWidgetId, vistas);
+
         new Thread(() -> {
             try {
-                URL url = new URL("http://http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/reservas/obtenerUltimaReserva.php");
+                System.out.println("RWidget: actualizarWidget, dentro del try");
+                URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/reservas/obtenerUltimaReserva.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setConnectTimeout(4000);
@@ -81,8 +101,8 @@ public class ReservaWidget extends AppWidgetProvider {
 
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(() -> {
-                    views.setTextViewText(R.id.tvContenidoReserva, textoReserva);
-                    appWidgetManager.updateAppWidget(appWidgetId, views);
+                    vistas.setTextViewText(R.id.tvContenidoReserva, textoReserva);
+                    appWidgetManager.updateAppWidget(appWidgetId, vistas);
                 });
 
             } catch (Exception e) {

@@ -173,8 +173,6 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
                 // fragmento de reservas
                 TextView tvTituloReservas = findViewById(R.id.tvTituloReservas);
                 tvTituloReservas.setText(R.string.mis_reservas);
-                TextView tvSiguiente = findViewById(R.id.tvSiguiente);
-                tvSiguiente.setText(R.string.texto_siguiente);
                 Button btnAnadirReserva = findViewById(R.id.btnAnadirReserva);
                 btnAnadirReserva.setText(R.string.btn_reserva);
             }

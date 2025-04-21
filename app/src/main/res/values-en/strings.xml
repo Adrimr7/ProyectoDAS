@@ -78,9 +78,9 @@
     <string name="reserva_anadida">Booking added successfully.</string>
     <string name="no_encontrado">Not found. Reload the app.</string>
     <string name="error_imagen">Image not found.</string>
-    <string name="num_pax">Num. pass: </string>
-    <string name="tarifa">Fare: </string>
-    <string name="alcance_con_dospuntos">Range: </string>
+    <string name="num_pax">Passengers</string>
+    <string name="tarifa">Fare</string>
+    <string name="alcance_con_dospuntos">Range</string>
     <string name="campos_obligatorios">All fields are mandatory.</string>
     <string name="error_act_avion">Plane update error.</string>
     <string name="avion_actualizado">Plane successfully updated.</string>
@@ -90,4 +90,6 @@
     <string name="error_registro">Register error.</string>
     <string name="error_conexion">Connection error.</string>
     <string name="completa_campos">Please, fill all the fields.</string>
+    <string name="ultima_reserva">Last booking:</string>
+    <string name="cargando">Loading...</string>
 </resources>

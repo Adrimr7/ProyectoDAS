@@ -4,13 +4,15 @@
     android:padding="8dp"
     android:background="@drawable/widget"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/tvUltimaReserva"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Última reserva:"
+        android:text="@string/ultima_reserva"
         android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="#000000"/>
@@ -19,7 +21,7 @@
         android:id="@+id/tvContenidoReserva"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cargando..."
+        android:text="@string/cargando"
         android:textSize="12sp"
         android:textColor="#000000"/>
 </LinearLayout>

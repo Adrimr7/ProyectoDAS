@@ -1,5 +1,6 @@
 package com.example.das_primeraevaluacion;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -97,11 +98,6 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         AvionDAO avionDAO = new AvionDAO(getBaseContext());
         listaAviones = avionDAO.obtenerTodosLosAviones();
 
-        if (listaAviones.isEmpty()) {
-            // cargar aviones desde el php al DAO
-            // todo
-        }
-
         filtrarAviones();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -144,6 +140,8 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                     int responseCode = conn.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         System.out.println("Reserva añadida correctamente a la BD remota.");
+                        // llamar al widget
+                        //sendBroadcast(new Intent("widgetUltimaReserva"));
                     } else {
                         System.out.println("Error al añadir reserva a la BD remota: " + responseCode);
                     }
