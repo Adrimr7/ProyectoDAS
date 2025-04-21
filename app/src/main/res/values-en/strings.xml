@@ -63,4 +63,9 @@
     <string name="confirmar_reserva">Confirm Booking</string>
     <string name="btn_reserva">Add new Booking</string>
     <string name="menu_perfil">User Profile</string>
+    <string name="editar_foto">Edit photo</string>
+    <string name="editar_foto_titulo">Add new profile picture</string>
+    <string name="elegir_de_galeria">Select from the gallery</string>
+    <string name="sacar_foto">Take a new photo</string>
+
 </resources>

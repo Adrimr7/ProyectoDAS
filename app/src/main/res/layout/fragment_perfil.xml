@@ -5,42 +5,53 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Imagen de perfil -->
     <ImageView
         android:id="@+id/ivPerfil"
         android:layout_width="86dp"
         android:layout_height="82dp"
+        android:layout_marginTop="40dp"
+        android:contentDescription="@string/perfil_usuario"
         android:src="@mipmap/ic_icono_persona"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/perfil_usuario" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Título del Perfil -->
+    <ImageButton
+        android:id="@+id/btnEditarFoto"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/editar_foto"
+        android:src="@android:drawable/ic_input_add"
+        app:layout_constraintEnd_toEndOf="@id/ivPerfil"
+        app:layout_constraintTop_toTopOf="@id/ivPerfil" />
+
     <TextView
         android:id="@+id/tvTituloPerfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:gravity="center"
         android:text="@string/perfil_usuario"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/ivPerfil"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:gravity="center" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivPerfil" />
 
-    <!-- Correo del Usuario -->
     <TextView
         android:id="@+id/tvCorreo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
         android:text="@string/email"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/tvTituloPerfil"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:gravity="center" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTituloPerfil" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

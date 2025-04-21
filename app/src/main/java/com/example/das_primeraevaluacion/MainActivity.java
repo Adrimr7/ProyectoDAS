@@ -133,7 +133,9 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
     @Override
     public void onBackPressed() {
         Fragment fragmentActual = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+        // settear el menu a home.
+        navigationView.setCheckedItem(R.id.nav_home);
+        getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         if (!(fragmentActual instanceof AvionesFragment)) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new AvionesFragment())
@@ -466,12 +468,12 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         System.out.println("MainActivity: onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         FragmentManager fragmentManager = getSupportFragmentManager();
-        AvionesFragment fragment = (AvionesFragment) fragmentManager.findFragmentById(R.id.fragment_container);
-        if (fragment != null) {
-            fragment.agregarAvion(requestCode, resultCode, data);
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+        if (fragment instanceof AvionesFragment) {
+            ((AvionesFragment) fragment).agregarAvion(requestCode, resultCode, data);
         }
         else {
-            System.out.println("Error: Fragment no encontrado");
+            System.out.println("Error: Fragment no es AvionesFragment (es " + fragment.getClass().getSimpleName() + ")");
         }
     }
 
@@ -484,8 +486,13 @@ public class MainActivity extends AppCompatActivity implements AgregarAvionDialo
         System.out.println("MainActivity: onResume");
         super.onResume();
         pasarGarbageCollector();
-        navigationView.setCheckedItem(R.id.nav_home);
-        cambiarFragement(new AvionesFragment());
+        if (navigationView.getCheckedItem().getItemId() == (R.id.nav_perfil)){
+            System.out.println("Es fragment de perfil");
+        }
+        else {
+            navigationView.setCheckedItem(R.id.nav_home);
+            cambiarFragement(new AvionesFragment());
+        }
     }
     /**
      * Se crea el canal para las notificaciones si no está ya creado

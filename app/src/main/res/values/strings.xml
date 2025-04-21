@@ -63,6 +63,9 @@
     <string name="confirmar_reserva">Confirmar Reserva</string>
     <string name="btn_reserva">Añadir Reserva</string>
     <string name="menu_perfil">Mi perfil</string>
-
+    <string name="editar_foto">Editar foto</string>
+    <string name="editar_foto_titulo">Editar foto de perfil</string>
+    <string name="elegir_de_galeria">Elegir de galería</string>
+    <string name="sacar_foto">Sacar foto</string>
 
 </resources>

@@ -14,6 +14,7 @@ playServicesMapsVersion = "17.0.1"
 uiGraphicsAndroid = "1.7.8"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.2.0"
+volley = "1.2.1"
 
 [libraries]
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -31,6 +32,7 @@ play-services-maps-v1701 = { module = "com.google.android.gms:play-services-maps
 ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
