@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.reserva;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.das_primeraevaluacion.R;
 
 import java.util.ArrayList;
 

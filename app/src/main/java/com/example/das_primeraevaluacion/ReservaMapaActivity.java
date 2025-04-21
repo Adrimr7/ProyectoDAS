@@ -1,5 +1,8 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.reserva;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +14,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.das_primeraevaluacion.Aeropuerto;
+import com.example.das_primeraevaluacion.Avion;
+import com.example.das_primeraevaluacion.AvionMapaAdapter;
+import com.example.das_primeraevaluacion.R;
 import com.example.das_primeraevaluacion.bd.AvionDAO;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -152,6 +159,10 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                     e.printStackTrace();
                 }
             }).start();
+
+            // enviar al widget
+            Intent intent = new Intent("widgetUltimaReserva");
+            sendBroadcast(intent);
 
             Toast.makeText(getBaseContext(), R.string.reserva_anadida, Toast.LENGTH_LONG).show();
             finish();
