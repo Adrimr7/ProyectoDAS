@@ -92,7 +92,6 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
     }
 
     private void eliminarAvion(View v) {
-        // Obtener el ID del avión desde el Intent
         int avionId = getIntent().getIntExtra("id", -1);
         if (avionId != -1) {
             AvionDAO avionDAO = new AvionDAO(v.getContext());

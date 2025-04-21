@@ -1,7 +1,5 @@
 package com.example.das_primeraevaluacion;
 
-import com.google.android.gms.maps.model.LatLng;
-
 public class Reserva {
     private int id;
     private String emailPasajero;

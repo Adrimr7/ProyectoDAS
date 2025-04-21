@@ -17,7 +17,7 @@
             android:layout_height="154dp"
             android:layout_marginBottom="16sp"
             android:layout_weight="@dimen/material_emphasis_disabled"
-            app:srcCompat="@drawable/baseline_airplane_ticket_24" />
+            app:srcCompat="@drawable/logo_app" />
 
         <EditText
             android:id="@+id/etEmail"

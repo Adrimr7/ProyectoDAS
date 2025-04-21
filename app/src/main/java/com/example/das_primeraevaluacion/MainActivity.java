@@ -32,8 +32,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
-import org.w3c.dom.Text;
-
 import java.util.Locale;
 import java.util.concurrent.Executors;
 

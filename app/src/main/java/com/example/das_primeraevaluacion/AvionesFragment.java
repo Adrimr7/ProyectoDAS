@@ -123,7 +123,8 @@ public class AvionesFragment extends Fragment {
      * Carga la lista de aviones desde un JSON y los añade a BD.
      * Se usa un buffer y se les asigna un id autoincremental por la BD.
      * @return ArrayList<Avion> Lista de aviones
-     */
+
+    COMENTADO PORQUE YA NO SE USA
 
     private ArrayList<Avion> cargarAvionesDesdeJSON() {
         System.out.println("AFragment: cargarAvionesDesdeJSON");
@@ -150,6 +151,7 @@ public class AvionesFragment extends Fragment {
         }
         return aviones;
     }
+     */
 
     private ArrayList<Avion> cargarAvionesDesdeRemoto() {
         System.out.println("AFragment: cargarAvionesDesdeRemoto");
@@ -169,14 +171,14 @@ public class AvionesFragment extends Fragment {
             InputStream is = conn.getInputStream();
             reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             StringBuilder jsonBuilder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonBuilder.append(line);
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                jsonBuilder.append(linea);
             }
 
-            JSONArray jsonArray = new JSONObject(jsonBuilder.toString()).getJSONArray("jets");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject obj = jsonArray.getJSONObject(i);
+            JSONArray listaJSON = new JSONObject(jsonBuilder.toString()).getJSONArray("jets");
+            for (int i = 0; i < listaJSON.length(); i++) {
+                JSONObject obj = listaJSON.getJSONObject(i);
                 Avion avion = new Avion(
                         0,
                         obj.getString("nombre"),
@@ -188,7 +190,7 @@ public class AvionesFragment extends Fragment {
                         obj.getInt("tarifa_base"),
                         obj.getString("clase"),
                         obj.getInt("tamano_m"),
-                        null // Suponemos que las "facilidades" las puedes tratar aparte si lo necesitas
+                        null // no se usa facilidades
                 );
 
                 avion.setId((int) avionDAO.insertarAvion(avion));
@@ -198,7 +200,7 @@ public class AvionesFragment extends Fragment {
             pasarGarbageCollector();
 
         } catch (Exception e) {
-            Log.e("HTTP_JSON_ERROR", "Error al cargar JSON remoto", e);
+            System.out.println("AFragment: cargarAvionesDesdeRemoto, Error al cargar JSON remoto" + e);
         } finally {
             if (reader != null) try { reader.close(); } catch (IOException ignored) {}
             if (conn != null) conn.disconnect();
@@ -291,7 +293,7 @@ public class AvionesFragment extends Fragment {
      */
 
     public void onAvionAgregado(String nombre, String clase, int tarifa, int numPasajeros, int alcance) {
-        System.out.println("onAvionAgregado");
+        System.out.println("AFragment: onAvionAgregado");
         Avion nuevoAvion = new Avion(0, nombre, "", "", alcance, numPasajeros, 0, tarifa, clase, 0, null);
         nuevoAvion.setId((int) avionDAO.insertarAvion(nuevoAvion));
         listaAviones.add(nuevoAvion);
@@ -301,11 +303,10 @@ public class AvionesFragment extends Fragment {
             mostrarNotificacion("ERROR" + exc);
         }
         mostrarNotificacion(nombre);
-        // anadir avion usando el php
     }
 
     private void mostrarNotificacion(String nombreAvion) {
-        System.out.println("Mostrar notificación: " + nombreAvion);
+        System.out.println("AFragment: mostrarNotificacion, " + nombreAvion);
 
         NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "aviones_channel";
@@ -327,21 +328,21 @@ public class AvionesFragment extends Fragment {
 
     }
     /**
-     * @param requestCode int
-     * @param resultCode int
-     * @param data Intent
+     * @param codigoRequest int
+     * @param codigoRespuesta int
+     * @param respuesta Intent
      * Se ejecuta al volver de la actividad, agrega el avion al fragment
      */
-    public void agregarAvion(int requestCode, int resultCode, Intent data) {
+    public void agregarAvion(int codigoRequest, int codigoRespuesta, Intent respuesta) {
         System.out.println("Entrado a onActivityResult");
-        if (resultCode == 0 && data != null) {
+        if (codigoRespuesta == 0 && respuesta != null) {
 
-            int id = data.getIntExtra("id", -1);
-            String nombre = data.getStringExtra("nombre");
-            String clase = data.getStringExtra("clase");
-            int tarifa = data.getIntExtra("tarifa", 0);
-            int pasajeros = data.getIntExtra("num_pasajeros", 0);
-            int alcance = data.getIntExtra("alcance_km", 0);
+            int id = respuesta.getIntExtra("id", -1);
+            String nombre = respuesta.getStringExtra("nombre");
+            String clase = respuesta.getStringExtra("clase");
+            int tarifa = respuesta.getIntExtra("tarifa", 0);
+            int pasajeros = respuesta.getIntExtra("num_pasajeros", 0);
+            int alcance = respuesta.getIntExtra("alcance_km", 0);
 
             // Encontramos el avión con ese ID y lo actualizamos
             for (int i = 0; i < listaAviones.size(); i++) {

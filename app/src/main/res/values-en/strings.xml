@@ -57,7 +57,9 @@
     <string name="tu_ubicacion">Your location</string>
     <string name="error_aeropuertos">Error selecting the airports.</string>
     <string name="aero_origen">Departure Airport</string>
+    <string name="origen">Departure</string>
     <string name="aero_destino">Arrival Airport</string>
+    <string name="destino">Arrival</string>
     <string name="pista_aero_origen">Search departure airport...</string>
     <string name="pista_aero_destino">Search arrival airport...</string>
     <string name="confirmar_reserva">Confirm Booking</string>
@@ -67,5 +69,24 @@
     <string name="editar_foto_titulo">Add new profile picture</string>
     <string name="elegir_de_galeria">Select from the gallery</string>
     <string name="sacar_foto">Take a new photo</string>
-
+    <string name="distancia">Distance</string>
+    <string name="distancia_hasta">Distancia to departure</string>
+    <string name="huella">Footprint</string>
+    <string name="permiso_ubi_denegado">Location permission denied.</string>
+    <string name="permiso_gal_denegado">Gallery permission denied.</string>
+    <string name="permiso_cam_denegado">Camera permission denied.</string>
+    <string name="reserva_anadida">Booking added successfully.</string>
+    <string name="no_encontrado">Not found. Reload the app.</string>
+    <string name="error_imagen">Image not found.</string>
+    <string name="num_pax">Num. pass: </string>
+    <string name="tarifa">Fare: </string>
+    <string name="alcance_con_dospuntos">Range: </string>
+    <string name="campos_obligatorios">All fields are mandatory.</string>
+    <string name="error_act_avion">Plane update error.</string>
+    <string name="avion_actualizado">Plane successfully updated.</string>
+    <string name="campo_obligatorio">This field is needed.</string>
+    <string name="error_login">Login error.</string>
+    <string name="error_registro">Register error.</string>
+    <string name="error_conexion">Connection error.</string>
+    <string name="completa_campos">Please, fill all the fields.</string>
 </resources>

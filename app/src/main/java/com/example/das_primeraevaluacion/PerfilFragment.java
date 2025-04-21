@@ -3,9 +3,6 @@ package com.example.das_primeraevaluacion;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -49,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -90,14 +86,8 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
             obtenerFotoDesdeServidor();
         }
         else {
-            tvCorreo.setText("ERROR");
+            tvCorreo.setText(R.string.no_encontrado);
         }
-        // llamar a ver si hay foto, en caso de que haya foto, descargarla. Si no la hay, no hacer nada.
-
-
-        // cargar la foto en local y en la nube?
-        // hace falta un PHP para cargar la foto en la BD
-        // editar la BD para cargar una foto de perfil?
 
         return view;
     }
@@ -156,7 +146,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ivPerfil = view.findViewById(R.id.ivPerfil);
         btnEditarFoto = view.findViewById(R.id.btnEditarFoto);
-        // cargar foto tambien!
+
         permisoGaleriaLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
@@ -164,7 +154,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
                     if (isGranted) {
                         abrirGaleria();
                     } else {
-                        Toast.makeText(getContext(), "Permiso denegado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.permiso_gal_denegado, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -176,7 +166,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
                     if (isGranted) {
                         abrirCamara();
                     } else {
-                        Toast.makeText(getContext(), "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.permiso_cam_denegado, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -196,7 +186,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
                         }
                         catch (IOException e) {
                             e.printStackTrace();
-                            Toast.makeText(getContext(), "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.error_imagen, Toast.LENGTH_SHORT).show();
                         }
                     }
                     else {
@@ -216,7 +206,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
                         subirFotoEnBase64(foto);
                     }
                     else {
-                        //ivPerfil.setImageResource(R.mipmap.ic_icono_persona);
+                        Toast.makeText(getContext(), R.string.error_imagen, Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -287,7 +277,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
 
     private void subirFotoEnBase64(Bitmap foto) {
         System.out.println("PFragment: subirFotoEnBase64");
-        System.out.println("Bitmap es nulo: " + (foto == null));
+        //System.out.println("Bitmap es nulo: " + (foto == null));
 
         String fotoBase64 = convertirImagenABase64(foto);
 

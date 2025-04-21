@@ -108,15 +108,14 @@ public class EditarAvionFragment extends DialogFragment {
             int nuevoAlcance = Integer.parseInt(etAlcance.getText().toString().trim());
 
             if (TextUtils.isEmpty(nuevoNombre) || TextUtils.isEmpty(nuevaClase)) {
-                Toast.makeText(getActivity(), "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.campos_obligatorios, Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Crear el nuevo avión con los valores actualizados
             Avion avion = new Avion(avionId, nuevoNombre, "", "", nuevoAlcance, nuevosPasajeros, 0, nuevaTarifa, nuevaClase, 0, null);
             int numFilas = avionDAO.actualizarAvion(avion);
             if (numFilas == 0) {
-                Toast.makeText(getActivity(), "Error al actualizar el avión", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.error_act_avion, Toast.LENGTH_SHORT).show();
             }
             else {
                 // actualizar el avion en BD.
@@ -157,7 +156,7 @@ public class EditarAvionFragment extends DialogFragment {
                 System.out.println("FEditarAvion: btnGuardar: Avion con cambios");
                 miListener.onAvionUpdated(avion);
             }
-            Toast.makeText(getActivity(), "Avión actualizado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.avion_actualizado, Toast.LENGTH_SHORT).show();
 
             Intent resultIntent = new Intent();
             resultIntent.putExtra("id", avionId);

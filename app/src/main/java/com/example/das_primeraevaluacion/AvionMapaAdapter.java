@@ -40,9 +40,9 @@ public class AvionMapaAdapter extends RecyclerView.Adapter<AvionMapaAdapter.Avio
         Avion avion = listaAviones.get(position);
 
         holder.tvNombre.setText(avion.getNombre());
-        holder.tvClase.setText("Num. pax: " + avion.getNumPasajeros());
-        holder.tvTarifa.setText("Tarifa: " + avion.getTarifaBase() + "€");
-        holder.tvAlcance.setText("Alcance: " + avion.getAlcanceKm() + "km");
+        holder.tvClase.setText(R.string.num_pax + avion.getNumPasajeros());
+        holder.tvTarifa.setText(R.string.tarifa + avion.getTarifaBase() + "€");
+        holder.tvAlcance.setText(R.string.alcance_con_dospuntos + avion.getAlcanceKm() + "km");
 
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(position == selectedPosition);

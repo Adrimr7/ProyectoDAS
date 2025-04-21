@@ -57,7 +57,9 @@
     <string name="tu_ubicacion">Tu ubicación</string>
     <string name="error_aeropuertos">Error al seleccionar los aeropuertos</string>
     <string name="aero_origen">Aeropuerto de Origen</string>
+    <string name="origen">Origen</string>
     <string name="aero_destino">Aeropuerto de Destino</string>
+    <string name="destino">Destino</string>
     <string name="pista_aero_origen">Buscar aeropuerto de origen...</string>
     <string name="pista_aero_destino">Buscar aeropuerto de destino...</string>
     <string name="confirmar_reserva">Confirmar Reserva</string>
@@ -67,5 +69,24 @@
     <string name="editar_foto_titulo">Editar foto de perfil</string>
     <string name="elegir_de_galeria">Elegir de galería</string>
     <string name="sacar_foto">Sacar foto</string>
-
+    <string name="distancia">Distancia</string>
+    <string name="distancia_hasta">Distancia hasta origen</string>
+    <string name="huella">Huella</string>
+    <string name="permiso_ubi_denegado">Permiso de ubicación denegado.</string>
+    <string name="permiso_gal_denegado">Permiso de galeria denegado.</string>
+    <string name="permiso_cam_denegado">Permiso de cámara denegado.</string>
+    <string name="reserva_anadida">Reserva añadida correctamente.</string>
+    <string name="no_encontrado">No encontrado. Recarga la app.</string>
+    <string name="error_imagen">Error al cargar la imagen.</string>
+    <string name="num_pax">Num. pax: </string>
+    <string name="tarifa">Tarifa: </string>
+    <string name="alcance_con_dospuntos">Alcance: </string>
+    <string name="campos_obligatorios">Todos los campos son obligatorios.</string>
+    <string name="error_act_avion">Error al actualizar el avión.</string>
+    <string name="avion_actualizado">Avión actualizado.</string>
+    <string name="campo_obligatorio">Este campo es obligatorio.</string>
+    <string name="error_login">Error al iniciar sesión.</string>
+    <string name="error_registro">Error al registrarse.</string>
+    <string name="error_conexion">Error de conexión.</string>
+    <string name="completa_campos">Por favor, completa todos los campos.</string>
 </resources>

@@ -33,7 +33,6 @@ import android.widget.Toast;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -154,7 +153,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                 }
             }).start();
 
-            Toast.makeText(getBaseContext(), "reserva anadida.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), R.string.reserva_anadida, Toast.LENGTH_LONG).show();
             finish();
         }
     }
@@ -200,7 +199,6 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
     private void mostrarUbicacionEnMapa(double lat, double lon) {
         ubicacionActual = new LatLng(lat, lon);
-        // todo: marker con algo distinto
         mMap.addMarker(new MarkerOptions().position(ubicacionActual).title(getString(R.string.tu_ubicacion)));
 
         // linea desde ubicacion actual a sitio.
@@ -223,9 +221,8 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         BitmapDescriptor iconoOrigen = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapSalida, 80, 80, false));
         BitmapDescriptor iconoDestino = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmapLlegada, 80, 80, false));
 
-        // todo: CAMBIAR ORIGEN, DESTINO A INGLES/CASTELLANO
-        mMap.addMarker(new MarkerOptions().position(latlngOrigen).title("Origen: " + origen.getNombre()).icon(iconoOrigen));
-        mMap.addMarker(new MarkerOptions().position(latlngDestino).title("Destino: " + destino.getNombre()).icon(iconoDestino));
+        mMap.addMarker(new MarkerOptions().position(latlngOrigen).title(R.string.origen + ": " + origen.getNombre()).icon(iconoOrigen));
+        mMap.addMarker(new MarkerOptions().position(latlngDestino).title(R.string.destino + ": " + destino.getNombre()).icon(iconoDestino));
         System.out.println("RMActivity: despuesMarkers" + latlngOrigen + latlngDestino);
 
         mMap.addPolyline(new PolylineOptions()
@@ -241,11 +238,16 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 100));
 
         distancia = calcularDistanciaKm(latlngOrigen, latlngDestino);
-        tvMapa.setText(distancia + "km");
+
+        if (ubicacionActual != null) {
+            Double distanciaAOrigen = calcularDistanciaKm(ubicacionActual, latlngOrigen);
+            tvMapa.setText(R.string.distancia_hasta + String.format("%.2f", distanciaAOrigen) + "km");
+        }
+        tvMapa.setText(R.string.distancia + String.format("%.2f", distancia) + "km");
 
         Toast.makeText(this,
-                "Distancia: " + String.format("%.2f", distancia) + " km\n" +
-                        "Huella: " + String.format("%.2f", distancia * EMISION_POR_KM) + " kg CO₂/pax",
+                R.string.distancia_hasta + ": " + String.format("%.2f", distancia) + " km\n" +
+                        R.string.huella +  ": " + String.format("%.2f", distancia * EMISION_POR_KM) + " kg CO₂/pax",
                 Toast.LENGTH_LONG).show();
 
     }
@@ -258,7 +260,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 obtenerUbicacionYMostrar();
             } else {
-                Toast.makeText(this, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.permiso_ubi_denegado, Toast.LENGTH_SHORT).show();
             }
         }
     }

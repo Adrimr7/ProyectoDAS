@@ -1,7 +1,6 @@
 package com.example.das_primeraevaluacion;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -21,24 +20,15 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,7 +38,6 @@ public class ReservasFragment extends Fragment {
     Datos para aeropuertos adaptados desde:
     (https://ourairports.com/data/ y https://github.com/davidmegginson/ourairports-data)
      */
-
 
     private RecyclerView recyclerView;
     private ReservaAdapter reservaAdapter;
@@ -113,7 +102,9 @@ public class ReservasFragment extends Fragment {
     /**
      * Se agregan a las preferencias las reservas por defecto.
      * Se hara en el futuro mediante BD
-     */
+
+     COMENTADO POR DESUSO
+
     private void agregarReservasPorDefecto() {
         SharedPreferences.Editor editor = prefs.edit();
         Gson gson = new Gson();
@@ -127,6 +118,7 @@ public class ReservasFragment extends Fragment {
         editor.putString("lista_reservas", jsonReservas);
         editor.apply();
     }
+     */
 
     private void agregarReservasDesdeRemoto() {
         System.out.println("RFragment: agregarReservasDesdeRemoto. Inicio");
@@ -149,12 +141,11 @@ public class ReservasFragment extends Fragment {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 StringBuilder result = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line);
+                String linea;
+                while ((linea = reader.readLine()) != null) {
+                    result.append(linea);
                 }
 
-                // Parseo del JSON
                 JSONObject jsonObject = new JSONObject(result.toString());
                 JSONArray reservasArray = jsonObject.getJSONArray("reservas");
 
@@ -193,7 +184,7 @@ public class ReservasFragment extends Fragment {
                 editor.apply();
             }
             else {
-                System.out.println("HTTP_ERROR. Respuesta del servidor: " + responseCode);
+                System.out.println("RFragment: agregarReservasDesdeRemoto, error; Respuesta del servidor: " + responseCode);
             }
 
         } catch (Exception e) {

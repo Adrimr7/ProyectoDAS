@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
             String password = etContrasena.getText().toString().trim();
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.completa_campos, Toast.LENGTH_SHORT).show();
             } else {
                 login(email, password);
             }
@@ -72,23 +72,22 @@ public class LoginActivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
-                String line;
+                String linea;
 
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
+                while ((linea = reader.readLine()) != null) {
+                    sb.append(linea);
                 }
 
                 JSONObject json = new JSONObject(sb.toString());
-                boolean success = json.getBoolean("success");
+                boolean ok = json.getBoolean("success");
 
                 runOnUiThread(() -> {
-                    String message = json.optString("message", "Error al iniciar sesión");
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, R.string.error_login, Toast.LENGTH_SHORT).show();
 
-                    if (success) {
+                    if (ok) {
                         // guardar en sharedpreferences el email
-                        SharedPreferences sharedPreferences = getSharedPreferences("Perfil", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        SharedPreferences prefs = getSharedPreferences("Perfil", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
                         editor.putString("email", email);
                         editor.apply();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -100,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() ->
-                        Toast.makeText(LoginActivity.this, "Error de conexión", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(LoginActivity.this, R.string.error_conexion, Toast.LENGTH_SHORT).show());
             }
         }).start();
     }

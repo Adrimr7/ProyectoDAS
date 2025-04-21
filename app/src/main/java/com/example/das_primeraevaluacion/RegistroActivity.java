@@ -66,20 +66,19 @@ public class RegistroActivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
-                String line;
+                String linea;
 
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
+                while ((linea = reader.readLine()) != null) {
+                    sb.append(linea);
                 }
 
                 JSONObject json = new JSONObject(sb.toString());
-                boolean success = json.getBoolean("success");
+                boolean ok = json.getBoolean("success");
 
                 runOnUiThread(() -> {
-                    String message = json.optString("message", "Registro fallido");
-                    Toast.makeText(RegistroActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegistroActivity.this, R.string.error_registro, Toast.LENGTH_SHORT).show();
 
-                    if (success) {
+                    if (ok) {
                         Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
@@ -89,7 +88,7 @@ public class RegistroActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() ->
-                        Toast.makeText(RegistroActivity.this, "Error en la conexión", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(RegistroActivity.this, R.string.error_conexion, Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
