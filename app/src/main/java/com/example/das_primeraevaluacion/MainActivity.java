@@ -33,6 +33,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.das_primeraevaluacion.avion.AgregarAvionDialog;
+import com.example.das_primeraevaluacion.avion.AvionesFragment;
+import com.example.das_primeraevaluacion.perfil.LoginActivity;
+import com.example.das_primeraevaluacion.perfil.PerfilFragment;
+import com.example.das_primeraevaluacion.reserva.ReservaWidget;
+import com.example.das_primeraevaluacion.reserva.ReservasFragment;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Locale;

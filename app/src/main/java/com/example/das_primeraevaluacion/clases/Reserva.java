@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.clases;
 
 public class Reserva {
     private int id;
@@ -24,47 +24,36 @@ public class Reserva {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
     public String getEmailPasajero() {
         return emailPasajero;
     }
-
     public void setEmailPasajero(String emailPasajero) {
         this.emailPasajero = emailPasajero;
     }
-
     public String getFechaReserva() {
         return fechaReserva;
     }
-
     public void setFechaReserva(String fechaReserva) {
         this.fechaReserva = fechaReserva;
     }
-
     public String getAvionNombre() {
         return avionNombre;
     }
-
     public void setAvionNombre(String avionNombre) {
         this.avionNombre = avionNombre;
     }
-
     public Aeropuerto getOrigen() {
         return this.aeroOrigen;
     }
-
     public Aeropuerto getDestino() {
         return this.aeroDestino;
     }
-
     public void setOrigen(Aeropuerto aero) {
         this.aeroOrigen = aero;
     }
-
     public void setDestino(Aeropuerto aero) {
         this.aeroDestino = aero;
     }

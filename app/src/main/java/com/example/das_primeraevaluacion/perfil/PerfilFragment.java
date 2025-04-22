@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.perfil;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -36,6 +36,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.das_primeraevaluacion.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,17 +60,19 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
     private ImageView ivPerfil;
     private SharedPreferences prefs;
     private ImageButton btnEditarFoto;
+    // estos ActivityResultLauncher se usan para no generar mas intents y que
+    // pueda haber conflictos. Ademas, al haber permisos de por medio,
+    // es mas recomendable hacerlo de esta manera.
     private ActivityResultLauncher<String> permisoGaleriaLauncher;
     private ActivityResultLauncher<String> permisoCamaraLauncher;
     private ActivityResultLauncher<Intent> resultadoGaleriaLauncher;
     private ActivityResultLauncher<Intent> resultadoCamaraLauncher;
 
     /**
+     * Se ejecuta al crear la vista, llama a obtenerFotoDesdeServidor() y cargarMail()
      * @param inflater LayoutInflater
      * @param container ViewGroup
      * @param savedInstanceState Bundle
-     * Se ejecuta al crear la vista. Se añaden los varios listeners que
-     * todavia no se usan, se usaran en el futuro.
      * @return View vista
      */
 
@@ -92,6 +95,10 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
         return view;
     }
 
+    /**
+     * Obtiene la foto de perfil desde el servidor, decodifica en base64
+     * y la muestra en el ImageView.
+     */
     private void obtenerFotoDesdeServidor() {
         String url = "http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/fotos/obtenerFoto.php?email=http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/fotos/obtenerFoto.php";
 
@@ -121,18 +128,18 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
                 reader.close();
                 conn.disconnect();
 
-                JSONObject jsonResponse = new JSONObject(resultado.toString());
-                boolean success = jsonResponse.getBoolean("success");
+                JSONObject respuestaJSON = new JSONObject(resultado.toString());
+                boolean ok = respuestaJSON.getBoolean("success");
 
-                if (success) {
-                    String fotoBase64 = jsonResponse.getString("foto");
+                if (ok) {
+                    String fotoBase64 = respuestaJSON.getString("foto");
 
-                    byte[] decodedBytes = Base64.decode(fotoBase64, Base64.DEFAULT);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                    byte[] bytesDecodificados = Base64.decode(fotoBase64, Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytesDecodificados, 0, bytesDecodificados.length);
 
                     new Handler(Looper.getMainLooper()).post(() -> ivPerfil.setImageBitmap(bitmap));
                 } else {
-                    String message = jsonResponse.getString("message");
+                    String message = respuestaJSON.getString("message");
                     System.out.println("PFragment: obtenerFotoDesdeServidor, Error: " + message);
                 }
 
@@ -142,6 +149,13 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
         }).start();
     }
 
+    /**
+     * Configura los comp. de la vista y los listeners, gestiona
+     * la logica de editar foto (galeria/camara) donde los launchers
+     * (permisos y seleccion de imagenes) llaman a sus metodos correspondientes.
+     * @param view View
+     * @param savedInstanceState Bundle
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ivPerfil = view.findViewById(R.id.ivPerfil);
@@ -189,9 +203,6 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
                             Toast.makeText(getContext(), R.string.error_imagen, Toast.LENGTH_SHORT).show();
                         }
                     }
-                    else {
-                        //ivPerfil.setImageResource(R.mipmap.ic_icono_persona);
-                    }
                 }
         );
 
@@ -218,6 +229,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
 
     }
 
+    // carga el correo desde SharedPreferences
     private void cargarMail() {
         String email = prefs.getString("email", "");
         if (!email.isEmpty()) {
@@ -229,6 +241,7 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
         }
     }
 
+    // siguientes cuatro metodos son triviales
     @Override
     public void onElegirGaleria() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
@@ -275,6 +288,10 @@ public class PerfilFragment extends Fragment implements EditarFotoDialog.EditarF
         return Base64.encodeToString(imagenBytes, Base64.NO_WRAP);
     }
 
+    /**
+     * Sube la foto convertida a Base64 al servidor usando Volley.
+     * @param foto Bitmap
+     */
     private void subirFotoEnBase64(Bitmap foto) {
         System.out.println("PFragment: subirFotoEnBase64");
         //System.out.println("Bitmap es nulo: " + (foto == null));

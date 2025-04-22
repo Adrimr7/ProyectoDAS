@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.reserva;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +11,11 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.das_primeraevaluacion.clases.Aeropuerto;
+import com.example.das_primeraevaluacion.R;
+import com.example.das_primeraevaluacion.clases.Reserva;
+import com.example.das_primeraevaluacion.clases.ReservaAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +34,14 @@ public class ReservasFragment extends Fragment {
     private ReservaAdapter reservaAdapter;
     private ArrayList<Reserva> listaReservas = new ArrayList<>();
 
+    /**
+     * Crea la vista del fragment de reservas, inicializa el RecyclerView,
+     * adapter y los listener correspondientes
+     * @param inflater LayoutInflater
+     * @param container ViewGroup
+     * @param savedInstanceState Bundle
+     * @return Vista inflada del fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reservas, container, false);
@@ -50,6 +63,10 @@ public class ReservasFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Carga las reservas desde el servidor, procesa el JSON y actualiza el adapter.
+     * Se usa el ExecutorService hacerlo en segundo plano.
+     */
     private void cargarReservasDesdeServidor() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -61,8 +78,8 @@ public class ReservasFragment extends Fragment {
                 URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/reservas/cargarReservas.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setConnectTimeout(2000);
-                conn.setReadTimeout(2000);
+                conn.setConnectTimeout(3000);
+                conn.setReadTimeout(3000);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                 StringBuilder result = new StringBuilder();

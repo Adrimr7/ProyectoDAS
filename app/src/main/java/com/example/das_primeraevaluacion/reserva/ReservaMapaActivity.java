@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.reserva;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,6 +11,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.das_primeraevaluacion.clases.Aeropuerto;
+import com.example.das_primeraevaluacion.clases.Avion;
+import com.example.das_primeraevaluacion.avion.AvionMapaAdapter;
+import com.example.das_primeraevaluacion.R;
 import com.example.das_primeraevaluacion.bd.AvionDAO;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +59,13 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
     private Avion avionSelecc;
     private LatLng ubicacionActual;
 
+    /**
+     * Inicializa el mapa, RecyclerView y botones de accion,
+     * le llegan aeropuertos de origen/destino del Intent y muestra
+     * distancia y emisiones si se han definido previamente.
+     *
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("RMActivity: onCreate");
@@ -82,12 +93,11 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
         Button btnVolver = findViewById(R.id.btnVolverMapa);
         btnVolver.setOnClickListener(v -> {
-            // todo: que no redirija al menu ppal
             finish();
         });
 
         Button btnConfirmar = findViewById(R.id.btnConfirmarMapa);
-        // todo: comentar funcion anadirReservasSiAvionSelecc
+
         btnConfirmar.setOnClickListener(v -> anadirReservaSiAvionSelecc());
 
         RecyclerView recyclerView = findViewById(R.id.recyclerViewMapa);
@@ -108,6 +118,10 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
     }
 
+    /**
+     * Anade reserva al servidor, recoge los datos correspondientes para
+     * hacer la reserva y muestra la notificacion del resultado al usuario.
+     */
     private void anadirReservaSiAvionSelecc() {
         if (avionSelecc != null) {
             SharedPreferences prefs = getSharedPreferences("Perfil", MODE_PRIVATE);
@@ -138,8 +152,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
                     int responseCode = conn.getResponseCode();
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         System.out.println("Reserva añadida correctamente a la BD remota.");
-                        // llamar al widget
-                        //sendBroadcast(new Intent("widgetUltimaReserva"));
+
                     } else {
                         System.out.println("Error al añadir reserva a la BD remota: " + responseCode);
                     }
@@ -207,6 +220,10 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         );
     }
 
+    /**
+     * Muestra los markers de origen/destino en el mapa, dibuja las lineas
+     * de ubicacion a origen y origen a destino, calcula distancia y huella de co2
+     */
     private void mostrarOrigenYDestino() {
         System.out.println("RMActivity: mostrarUbicacionEnMapa");
         LatLng latlngOrigen = new LatLng(origen.getLat(), origen.getLon());
@@ -244,6 +261,7 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
 
     }
 
+    // al obtener los permisos
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -274,6 +292,12 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         mapView.onSaveInstanceState(mapViewBundle);
     }
 
+    /**
+     * Calcula la distancia entre dos puntos usando la formula de Haversine.
+     * @param origen LatLng
+     * @param destino LatLng
+     * @return Distancia en km double
+     */
     public static double calcularDistanciaKm(LatLng origen, LatLng destino) {
         System.out.println("RMActivity: calcularDistanciaKm");
         // calcular la distancia con la formula de Haversine entre dos puntos
@@ -292,7 +316,10 @@ public class ReservaMapaActivity extends AppCompatActivity implements OnMapReady
         // radio de la tierra
         return 6371 * c;
     }
-
+    /**
+     * Filtra lista de aviones segun alcance y distancia del avion,
+     * ordena por tarifa y calcula distancia de la reserva
+     */
     private void filtrarAviones() {
         if (distancia == -1) {
             LatLng latlngOrigen = new LatLng(origen.getLat(), origen.getLon());

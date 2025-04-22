@@ -1,15 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.DAS_PrimeraEvaluacion" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.DAS_PrimeraEvaluacion" parent="Base.Theme.DAS_PrimeraEvaluacion" />
 
     <style name="CustomPopupMenuText" parent="Widget.AppCompat.PopupMenu">
-        <item name="android:textColor">#FFFFFF</item> <!-- Blanco -->
-        <item name="android:textStyle">bold</item> <!-- Negrita -->
+        <item name="android:textColor">#FFFFFF</item> <!-- blanco -->
+        <item name="android:textStyle">bold</item> <!-- negrita-->
         <item name="android:textAppearance">@style/TextAppearance.Material3.ActionBar.Title</item>
     </style>
 </resources>

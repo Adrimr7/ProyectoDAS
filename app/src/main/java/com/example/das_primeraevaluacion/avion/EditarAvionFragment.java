@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.avion;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.das_primeraevaluacion.R;
 import com.example.das_primeraevaluacion.bd.AvionDAO;
+import com.example.das_primeraevaluacion.clases.Avion;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -164,9 +167,10 @@ public class EditarAvionFragment extends DialogFragment {
             resultIntent.putExtra("tarifa", nuevaTarifa);
             resultIntent.putExtra("num_pasajeros", nuevosPasajeros);
             resultIntent.putExtra("alcance_km", nuevoAlcance);
+            // result para no confundir con otros intents.
             getActivity().setResult(EDITAR_AVION_REQUEST_CODE, resultIntent);
             System.out.println("FEditarAvion: btnGuardar: Intent hecho" + getActivity());
-            dismiss(); // Cerrar el Fragment
+            dismiss();
         });
 
         btnCancelar.setOnClickListener(v -> dismiss());

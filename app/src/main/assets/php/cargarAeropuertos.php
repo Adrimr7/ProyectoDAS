@@ -1,4 +1,6 @@
 <?php
+// Hecho por Adrian Mena
+
 $host = "localhost";
 $db = "Xamena028_usuarios";
 $user = "Xamena028";

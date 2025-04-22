@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.clases;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.das_primeraevaluacion.R;
+
 import java.util.ArrayList;
 
 public class AeropuertoAdapter extends RecyclerView.Adapter<AeropuertoAdapter.AeropuertoViewHolder> {
@@ -34,6 +37,11 @@ public class AeropuertoAdapter extends RecyclerView.Adapter<AeropuertoAdapter.Ae
         return new AeropuertoViewHolder(itemView);
     }
 
+    /**
+     * Configura la vista de cada elemento de aeropuerto y establece los TextViews y el CheckBox
+     * @param holder AeropuertoViewHolder
+     * @param position int
+     */
     @Override
     public void onBindViewHolder(AeropuertoViewHolder holder, int position) {
         Aeropuerto aeropuerto = aeropuertos.get(position);
@@ -43,6 +51,7 @@ public class AeropuertoAdapter extends RecyclerView.Adapter<AeropuertoAdapter.Ae
         SharedPreferences prefs = contexto.getSharedPreferences("Settings", MODE_PRIVATE);
         String idiomaActual = prefs.getString("My_Lang", "es");
 
+        // pais del aeropuerto dependiendo del idioma
         if ("en".equals(idiomaActual)) {
             holder.paisAeropuerto.setText(aeropuerto.getPais_ingles());
         }
@@ -54,10 +63,8 @@ public class AeropuertoAdapter extends RecyclerView.Adapter<AeropuertoAdapter.Ae
 
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             // esto se hace asi de complejo por errores pasados
-            // a la hora de checkear y des-checkear rapidamente
-            // los distintos aeropuertos
+            // a la hora de checkear y des-checkear rapidamente los distintos aeropuertos
             if (isChecked) {
-                //
                 if (aeropuertoSeleccionado != null) {
                     int prevPos = aeropuertos.indexOf(aeropuertoSeleccionado);
                     aeropuertoSeleccionado = null;
@@ -82,6 +89,7 @@ public class AeropuertoAdapter extends RecyclerView.Adapter<AeropuertoAdapter.Ae
         return aeropuertos.size();
     }
 
+    // viewHolder similar al que está en AvionMapaAdapter
     public static class AeropuertoViewHolder extends RecyclerView.ViewHolder {
 
         TextView nombreAeropuerto, paisAeropuerto, codigoIcao;

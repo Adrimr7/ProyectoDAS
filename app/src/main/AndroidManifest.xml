@@ -29,24 +29,24 @@
             android:value="AIzaSyB5stU55D-uURaf8clUzE5SzY6ZaFstFKU"/>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".perfil.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegistroActivity"
+        <activity android:name=".perfil.RegistroActivity"
             android:exported="true"/>
-        <activity android:name=".DetallesAvionActivity"
+        <activity android:name=".avion.DetallesAvionActivity"
             android:exported="true" />
-        <activity android:name=".ReservaMapaActivity"
+        <activity android:name=".reserva.ReservaMapaActivity"
             android:exported="true" />
         <activity android:name=".MainActivity"
             android:exported="true"/>
         <meta-data android:name="android.graphics.use_vulkan"
             android:value="false"/>
-        <receiver android:name=".ReservaWidget"
+        <receiver android:name=".reserva.ReservaWidget"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>

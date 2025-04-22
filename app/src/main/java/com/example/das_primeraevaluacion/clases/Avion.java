@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.clases;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class Avion{
     private int tamanoM;
     private List<String> facilidades;
 
-    // Constructora.
+    // constructora.
     public Avion(int id, String nombre, String fabricante, String modelo, int alcanceKm, int numPasajeros,
                  int personalCabina, int tarifaBase, String clase, int tamanoM, List<String> facilidades) {
         this.id = id;
@@ -31,7 +31,7 @@ public class Avion{
         this.facilidades = facilidades;
     }
 
-    // Getters
+    // getters y setters
     public int getId() {
         return id;
     }
@@ -62,11 +62,6 @@ public class Avion{
     public int getTamanoM() {
         return tamanoM;
     }
-    public List<String> getFacilidades() {
-        return facilidades;
-    }
-
-    // Setters
 
     public void setNombre(String nombre) {
         this.nombre = nombre;

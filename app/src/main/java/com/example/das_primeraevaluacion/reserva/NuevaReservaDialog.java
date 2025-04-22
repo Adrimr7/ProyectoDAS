@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.reserva;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -16,6 +16,10 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.das_primeraevaluacion.clases.Aeropuerto;
+import com.example.das_primeraevaluacion.clases.AeropuertoAdapter;
+import com.example.das_primeraevaluacion.R;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,12 +35,20 @@ public class NuevaReservaDialog extends DialogFragment {
 
     private EditText busquedaOrigen, busquedaDestino;
     private RecyclerView recyclerOrigen, recyclerDestino;
+    // comentado el AutoCompleteTextView porque se ha desechado la idea
+    // de filtrar por pais, ya que aparece el pais al hacer la busqueda.
     // private AutoCompleteTextView autoPaisOrigen, autoPaisDestino;
     private Button btnConfirmarReserva;
     private ArrayList<Aeropuerto> todosLosAeropuertos;
     private AeropuertoAdapter aeropuertoAdapterOrigen, aeropuertoAdapterDestino;
     private ArrayList<Aeropuerto> listaAeropuertosOrigen, listaAeropuertosDestino;
 
+    /**
+     * Inicializa el layout, los campos de busqueda y el boton de
+     * confirmacion de reserva, que llama a ReservaMapaActivity.
+     * @param savedInstanceState Bundle
+     * @return Dialogo
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         System.out.println("NRDialog: onCreateDialog");
@@ -138,6 +150,15 @@ public class NuevaReservaDialog extends DialogFragment {
                 .create();
     }
 
+    /**
+     * Obtiene un Arraylist de Aeropuertos desde el sevidor, procesa el JSON
+     * y devuelve la lista para usarla despues.
+     * NOTA: los datos que tiene la BD se han sacado de un CSV hecho a mano a partir
+     * de datos sacados de ourAirports y otra fuente mas.
+     * Se adjunta en el trabajo el CSV y se explica con mas detalle en el informe.
+     * @return ArrayList<Aeropuerto> listaAeropuertos
+     */
+
     private ArrayList<Aeropuerto> obtenerAeropuertos() {
         System.out.println("NRDialog: obtenerAeropuertos");
         final ArrayList<Aeropuerto> listaAeropuertos = new ArrayList<>();
@@ -203,7 +224,14 @@ public class NuevaReservaDialog extends DialogFragment {
     }
 
      */
-
+    /**
+     * Filtra los aerop. segun la busqueda y el pais seleccionado (no se usa)
+     *
+     * @param textoBusqueda String
+     * @param paisSeleccionado String (no se usa)
+     * @param listaAeropuertos List<Aeropuerto>
+     * @param adapter AeropuertoAdapter
+     */
     private void filtrarAeropuertos(String textoBusqueda, String paisSeleccionado, List<Aeropuerto> listaAeropuertos, AeropuertoAdapter adapter) {
         List<Aeropuerto> listaFiltrada = new ArrayList<>();
         for (Aeropuerto a : todosLosAeropuertos) {

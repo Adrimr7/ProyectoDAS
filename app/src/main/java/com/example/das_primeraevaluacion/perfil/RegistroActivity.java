@@ -1,14 +1,15 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.perfil;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.das_primeraevaluacion.R;
 
 import org.json.JSONObject;
 
@@ -19,44 +20,49 @@ import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.net.URL;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegistroActivity extends AppCompatActivity {
 
     EditText etEmail, etContrasena;
-    Button btnLogin;
-    TextView tvARegistro;
+    Button btnRegistro;
+    TextView tvALogin;
 
+    /**
+     * Inicializa el registro, listeners, campos de entrada y la nav. al login
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_registro);
 
         etEmail = findViewById(R.id.etEmail);
         etContrasena = findViewById(R.id.etContrasena);
-        btnLogin = findViewById(R.id.btnLogin);
-        tvARegistro = findViewById(R.id.tvARegistro);
+        btnRegistro = findViewById(R.id.btnRegistro);
+        tvALogin = findViewById(R.id.tvALogin);
 
-        btnLogin.setOnClickListener(v -> {
-            String email = etEmail.getText().toString().trim();
-            String password = etContrasena.getText().toString().trim();
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, R.string.completa_campos, Toast.LENGTH_SHORT).show();
-            } else {
-                login(email, password);
-            }
+        btnRegistro.setOnClickListener(v -> {
+            String email = etEmail.getText().toString();
+            String password = etContrasena.getText().toString();
+            register(email, password);
         });
 
-        tvARegistro.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegistroActivity.class);
+        tvALogin.setOnClickListener(v -> {
+            Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         });
     }
 
-    private void login(String email, String password) {
+    /**
+     * Hace el registro mediante el php, procesa el JSON y envia al usuario
+     * a LoginActivity para que se haga login si el registro ha ido bien.
+     * @param email String
+     * @param password String
+     */
+    private void register(String email, String password) {
         new Thread(() -> {
             try {
-                URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/login.php");
+                URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/registro.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
@@ -82,25 +88,24 @@ public class LoginActivity extends AppCompatActivity {
                 boolean ok = json.getBoolean("success");
 
                 runOnUiThread(() -> {
-                    Toast.makeText(LoginActivity.this, R.string.login_correcto, Toast.LENGTH_SHORT).show();
 
                     if (ok) {
-                        // guardar en sharedpreferences el email
-                        SharedPreferences prefs = getSharedPreferences("Perfil", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString("email", email);
-                        editor.apply();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Toast.makeText(RegistroActivity.this, R.string.registro_correcto, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(RegistroActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
+                    }
+                    else {
+                        Toast.makeText(RegistroActivity.this, R.string.error_registro, Toast.LENGTH_SHORT).show();
                     }
                 });
 
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() ->
-                        Toast.makeText(LoginActivity.this, R.string.error_conexion, Toast.LENGTH_SHORT).show());
+                        Toast.makeText(RegistroActivity.this, R.string.error_conexion, Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
 }
+

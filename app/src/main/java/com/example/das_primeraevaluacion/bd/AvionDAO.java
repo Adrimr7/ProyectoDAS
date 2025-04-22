@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.das_primeraevaluacion.Avion;
+import com.example.das_primeraevaluacion.clases.Avion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +41,7 @@ public class AvionDAO {
         values.put("clase", avion.getClase());
         values.put("tamano_m", avion.getTamanoM());
 
-        // Insertar el avión y devolver el ID generado
+        // insertar avion y returnear el id autogeneradoi
         return db.insert("aviones", null, values);
     }
 

@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.avion;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.das_primeraevaluacion.R;
+import com.example.das_primeraevaluacion.clases.Avion;
+
 import java.util.ArrayList;
 
+// clase para poder cargar los aviones en ReservaMapaActivity
 public class AvionMapaAdapter extends RecyclerView.Adapter<AvionMapaAdapter.AvionViewHolder> {
 
     private ArrayList<Avion> listaAviones;
@@ -35,6 +39,13 @@ public class AvionMapaAdapter extends RecyclerView.Adapter<AvionMapaAdapter.Avio
         return new AvionViewHolder(itemView);
     }
 
+
+    /**
+     * Vincula los datos con la vista, configura los textos y checkbox..
+     *
+     * @param holder AvionViewHolder
+     * @param position int
+     */
     @Override
     public void onBindViewHolder(@NonNull AvionViewHolder holder, int position) {
         Avion avion = listaAviones.get(position);
@@ -68,6 +79,7 @@ public class AvionMapaAdapter extends RecyclerView.Adapter<AvionMapaAdapter.Avio
         return listaAviones.size();
     }
 
+    // clase ViewHolder para el RecyclerView donde se anaden las cosas de los items
     public static class AvionViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvClase, tvTarifa, tvAlcance;
         CheckBox checkBox;

@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.avion;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,7 +16,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.das_primeraevaluacion.R;
 import com.example.das_primeraevaluacion.bd.AvionDAO;
+import com.example.das_primeraevaluacion.clases.Avion;
+import com.example.das_primeraevaluacion.clases.AvionAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -152,6 +155,13 @@ public class AvionesFragment extends Fragment {
     }
      */
 
+
+    /**
+     * Obtiene la lista de aviones y los guarda en la BD local.
+     * Peticion al servidor (obtenerAviones.php), procesa el JSON y crea los aviones.
+     *
+     * @return ArrayList<Avion> Arraylist de aviones.
+     */
     private ArrayList<Avion> cargarAvionesDesdeRemoto() {
         System.out.println("AFragment: cargarAvionesDesdeRemoto");
         ArrayList<Avion> aviones = new ArrayList<>();
@@ -163,8 +173,8 @@ public class AvionesFragment extends Fragment {
             URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/amena028/WEB/obtenerAviones.php");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setConnectTimeout(2000);
-            conn.setReadTimeout(2000);
+            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(3000);
             conn.connect();
 
             InputStream is = conn.getInputStream();
@@ -212,7 +222,7 @@ public class AvionesFragment extends Fragment {
     /**
      * Reinicia la base de datos, y carga otra vez los aviones desde el JSON.
      */
-    void resetearBD() {
+    public void resetearBD() {
         System.out.println("AFragment: resetearBD");
 
         ProgressBar progressBar = getView().findViewById(R.id.progressBar);
@@ -245,7 +255,8 @@ public class AvionesFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // llamar a la función que mete los aviones desde el JSON
+
+            // cargar los aviones desde el JSON
 
             try {
 
@@ -304,6 +315,12 @@ public class AvionesFragment extends Fragment {
         mostrarNotificacion(nombre);
     }
 
+    /**
+     * Envia la notificacion al anadir el avion a la BD y al remoto.
+     *
+     * @param nombreAvion String
+     */
+
     private void mostrarNotificacion(String nombreAvion) {
         System.out.println("AFragment: mostrarNotificacion, " + nombreAvion);
 
@@ -343,11 +360,11 @@ public class AvionesFragment extends Fragment {
             int pasajeros = respuesta.getIntExtra("num_pasajeros", 0);
             int alcance = respuesta.getIntExtra("alcance_km", 0);
 
-            // Encontramos el avión con ese ID y lo actualizamos
+            // actualizar el avion con el id correspondiente
             for (int i = 0; i < listaAviones.size(); i++) {
                 Avion avion = listaAviones.get(i);
                 if (avion.getId() == id) {
-                    System.out.println("El id que coincide es: " + id);
+                    System.out.println("El id que coincide es: " + id + codigoRequest);
                     avion.setNombre(nombre);
                     avion.setClase(clase);
                     avion.setTarifaBase(tarifa);
@@ -361,7 +378,7 @@ public class AvionesFragment extends Fragment {
         }
     }
     /**
-     * Se llama para agregar un avion a la BD
+     * Se llama para agregar un avion a la BD remota y a la local
      * Se actualiza el RecyclerView y se envia una notificacion.
      * @param nombre String
      * @param clase String

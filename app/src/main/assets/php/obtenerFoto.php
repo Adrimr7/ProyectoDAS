@@ -1,7 +1,5 @@
 <?php
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Hecho por Adrian Mena
 
 $host = "localhost";
 $db = "Xamena028_usuarios";

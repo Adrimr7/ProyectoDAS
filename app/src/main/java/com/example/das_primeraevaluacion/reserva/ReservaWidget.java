@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.reserva;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.RemoteViews;
+
+import com.example.das_primeraevaluacion.R;
 
 import org.json.JSONObject;
 
@@ -46,6 +48,13 @@ public class ReservaWidget extends AppWidgetProvider {
             }
         }
     }
+
+    /**
+     * Actualiza el widget con la ultima reserva del servidor en un hilo
+     * @param context Context
+     * @param appWidgetManager AppWidgetManager
+     * @param appWidgetId int
+     */
 
     public static void actualizarWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         System.out.println("RWidget: actualizarWidget");

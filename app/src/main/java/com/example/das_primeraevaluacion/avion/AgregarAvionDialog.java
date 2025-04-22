@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.avion;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.das_primeraevaluacion.R;
 
 
 public class AgregarAvionDialog extends DialogFragment {
@@ -81,7 +83,7 @@ public class AgregarAvionDialog extends DialogFragment {
 
             boolean datosValidos = true;
 
-            // Verificar si los campos están vacíos
+            // verificacion si campos vacios
             if (nombre.isEmpty()) {
                 etNombre.setError("Este campo es obligatorio");
                 datosValidos = false;

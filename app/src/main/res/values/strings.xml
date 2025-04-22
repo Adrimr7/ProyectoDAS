@@ -92,4 +92,5 @@
     <string name="completa_campos">Por favor, completa todos los campos.</string>
     <string name="ultima_reserva">Última reserva:</string>
     <string name="cargando">Cargando...</string>
+    <string name="registro_correcto">Registro correcto.</string>
 </resources>

@@ -1,7 +1,8 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.clases;
 
 import java.io.Serializable;
 
+// clase para almacenar los aeropuertos que se usan para las reservas
 public class Aeropuerto implements Serializable {
 
     private String codigo_icao;
@@ -24,7 +25,7 @@ public class Aeropuerto implements Serializable {
         this.pais_iso = pais_iso;
     }
 
-
+    // getters y setters
     public String getCodigo_icao() {
         return codigo_icao;
     }

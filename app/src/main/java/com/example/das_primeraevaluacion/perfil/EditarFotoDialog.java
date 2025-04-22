@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.perfil;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.das_primeraevaluacion.R;
 
 public class EditarFotoDialog extends DialogFragment {
 
@@ -17,6 +19,10 @@ public class EditarFotoDialog extends DialogFragment {
 
     private EditarFotoListener listener;
 
+    /**
+     * Vincula el fragment del dialog con EditarFotoListener
+     * @param context Context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -28,6 +34,13 @@ public class EditarFotoDialog extends DialogFragment {
             throw new RuntimeException("Debe implementar EditarFotoListener");
         }
     }
+
+    /**
+     * Dialogo para editar foto y llamar al listener.
+     * @param savedInstanceState Bundle
+     *
+     * @return Dialog Dialogo del builder.
+     */
 
     @NonNull
     @Override

@@ -1,4 +1,4 @@
-package com.example.das_primeraevaluacion;
+package com.example.das_primeraevaluacion.avion;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.das_primeraevaluacion.R;
 import com.example.das_primeraevaluacion.bd.AvionDAO;
+import com.example.das_primeraevaluacion.clases.Avion;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -90,10 +92,14 @@ public class DetallesAvionActivity extends AppCompatActivity implements EditarAv
 
     }
 
-    private void eliminarAvion(View v) {
+    /**
+     * Elimina el avion de la BD remota, de la local y del Arraylist.
+     * @param vista View
+     */
+    private void eliminarAvion(View vista) {
         int avionId = getIntent().getIntExtra("id", -1);
         if (avionId != -1) {
-            AvionDAO avionDAO = new AvionDAO(v.getContext());
+            AvionDAO avionDAO = new AvionDAO(vista.getContext());
             avionDAO.borrarAvion(avionId);
             // borrar avion de la BD remota
             String nombreAvion = getIntent().getStringExtra("nombre");
